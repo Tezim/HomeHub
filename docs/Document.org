@@ -1,0 +1,198 @@
+#+TITLE:  HomeIO
+#+AUTHOR: HomeIO tím: Tatiana Hýlová, Matej Skulský, Matej Florek, Viktor Valacsai
+#+HTML_HEAD: <style type="text/css">
+#+HTML_HEAD: img {
+#+HTML_HEAD:   display: block;
+#+HTML_HEAD:   margin-left: 0;
+#+HTML_HEAD:   margin-right: auto;
+#+HTML_HEAD: }
+#+HTML_HEAD: </style>
+#+LATEX_HEADER: \usepackage[margin=2cm]{geometry}
+#+LaTeX_HEADER: \usepackage{listings}
+#+LaTeX_HEADER: \usepackage{xcolor}
+#+LATEX: \newpage
+#+LaTeX_HEADER: \usepackage{minted}
+
+* Funkčná špecifikácia
+** Účel
+Projekt sa zameriava na riešenie vybraných problémov spojených s monitorovaním a analýzou dát z IoT zariadení v kontexte inteligentnej domácnosti. V súčasnej dobe, keď domácnosti začínajú byť čoraz viac digitalizované a automatizované, je kľúčové zabezpečiť efektívne, bezpečné a užívateľsky prívetivé spracovanie dát z rôznych zariadení.
+
+*** Problémy, ktoré projekt rieši:
+- **Rôznorodosť zariadení:** V inteligentnej domácnosti môžeme nájsť rôzne zariadenia od mnohých výrobcov (osvetlenie, termostaty, bezpečnostné kamery, reproduktory atď.). Integrácia týchto zariadení do jednotného systému je výzvou.
+
+- **Real-time reakcie:** Niektoré hlásiče, sú efektívnejšie keď interagujú s inými zariadeniami.
+
+- **Bezpečnosť a súkromie:** Domácnosti obsahujú veľa súkromných informácií. Ochrana týchto dát pred neoprávneným prístupom, útokmi alebo únikmi je kľúčová.
+
+- **Optimalizácia spotreby energie:** Správna analýza dát môže pomôcť optimalizovať spotrebu energie v domácnosti, čím sa šetrí nielen peňaženka užívateľa, ale aj životné prostredie.
+
+- **Užívateľská prispôsobivosť:** Každý má iné preferencie týkajúce sa nastavenia svojho domu. Systém by mal byť dostatočne flexibilný, aby mohol zohľadňovať individuálne požiadavky a preferencie užívateľa.
+
+Cieľom tohto projektu je vytvoriť integrovaný systém, ktorý spojí rôzne IoT zariadenia v inteligentnej domácnosti do jednej platformy, zabezpečí ich efektívne spracovanie a analýzu a poskytne užívateľom jasné a zrozumiteľné informácie a nástroje pre ich domácnosť.
+* Technická špecifikácia
+
+** Architektúra systému
+Systém je navrhnutý ako modulárna platforma s viacerými komponentami, ktoré spolu interagujú. Hlavné komponenty zahrňujú:
+- *Backendový server:* Zodpovedný za spracovanie dát, analýzu a komunikáciu s databázou.
+- *Frontend (užívateľské rozhranie):* Umožňuje užívateľom zobrazovať dáta, nastavovať preferencie a ovládať jednotlivé zariadenia.
+- *Databáza* Skladuje historické dáta, užívateľské nastavenia a informácie o zariadeniach.
+- *Užívateľské zariadenia:* Užívateľ pripojí vlastné zariadenia
+  
+** Technologický stack
+*** Backend
+- *Jazyk a framework:* Python s frameworkom Flask pre vytvorenie API.
+- *Dátové spracovanie:* PySpark pre analýzu veľkých dát.
+*** Frontend
+- *Technológia:* ReactJS alebo Angular pre vytvorenie dyn amického webového rozhrania.
+*** Databáza
+- *TinyDB:* Vhodná pre ukladanie menších súborov, ktoré reprezentujú užívateľské zariadenia.
+
+** Komunikačné protokoly
+*** RESTful API
+Vytvorené pomocou Flasku na komunikáciu medzi frontendom a backendom, ako aj pre zber dát z IoT zariadení.
+
+*** MQTT (Message Queuing Telemetry Transport)
+Lahký a efektívny protokol na komunikáciu s IoT zariadeniami v reálnom čase.
+
+** Bezpečnostné opatrenia
+*** Šifrovanie
+Všetky dáta prenášané medzi serverom a frontendom sú šifrované pomocou TLS.
+Zariadenia v rámci domácnosti sú neštandardné a preto je bezpečnosť obmedzená na rámec lokálnej siete.
+*** Autentifikácia a autorizácia
+Užívatelia musia byť autentifikovaní (napr. meno-heslo, kryptografický kľúč alebo pomocou OAuth2).
+
+** Scalability a výkonnostné požiadavky
+Systém bude podporovať jeden smer škálovania. Hlavým objektom je "domov", ktorý spravuje aj backend, aj front end. 
+
+* Požiadavky na produkt
+** Všeobecné požiadavky
+*** Použiteľnosť
+- Intuitívne užívateľské rozhranie ako webová stránka.
+- Jednoduchá registrácia a prihlásenie užívateľa do systému.
+*** Výkonnosť
+- Systém by mal reagovať na užívateľské akcie v reálnom čase (latencia nižšia ako 2 sekundy) s overením výsledku.
+*** Bezpečnosť
+- Zabezpečenie dát pred neoprávneným prístupom.
+- Hash hesiel v databáze, salt, pepper.
+  
+** Špecifické požiadavky
+*** Správa zariadení
+- Užívatelia by mali byť schopní pridať nové IoT zariadenie (napr. inteligentnú žiarovku) do systému pomocou jednoduchého formulára.
+- Možnosť pre užívateľa prezrieť si zoznam pridaných zariadení.
+- Možnosť pre užívateľa mazať alebo upravovať informácie o pridaných zariadeniach.
+- Sledovať históriu zariadení (hodnôt, interagcií)
+  
+*** Ovládanie zariadení
+- Možnosť zapnúť/vypnúť inteligentnú žiarovku cez užívateľské rozhranie.
+- Časované a podmienené akcie v systéme.
+- Zobrazenie aktuálneho stavu zariadenia (zapnuté/vypnuté).
+
+*** História akcií
+- Systém by mal evidovať a zobrazovať históriu akcií užívateľov a hookov.
+
+*** Nastavenia užívateľa
+- Možnosť zmeny hesla, kľúča.
+- Možnosť nastavenia preferovaného jazyka rozhrania (napr. slovenčina, angličtina).
+
+
+
+
+* Dokument o prípadoch použitia
+
+** Prípad použitia: Pridanie nového zariadenia
+
+*** Aktéri
+- Užívateľ
+- Systém
+
+*** Scenár
+1. Užívateľ sa prihlási do systému.
+2. Užívateľ prejde do sekcie pre pridanie nového zariadenia.
+3. Užívateľ vyplní potrebné informácie o zariadení (napr. typ, názov, umiestnenie).
+4. Užívateľ potvrdí pridanie zariadenia.
+5. Systém uloží informácie a potvrdí užívateľovi úspešné pridanie.
+
+** Prípad použitia: Ovládanie zariadenia
+
+*** Aktéri
+- Užívateľ
+- Systém
+- IoT zariadenie (inteligentná žiarovka)
+
+*** Scenár
+1. Užívateľ si prezrie zoznam dostupných zariadení.
+2. Užívateľ vyberie konkrétne zariadenie na ovládanie.
+3. Užívateľ stlačí tlačidlo pre zapnutie/vypnutie žiarovky.
+4. Systém pošle príkaz zariadeniu a aktualizuje stav v databáze.
+5. Užívateľ vidí aktualizovaný stav zariadenia v rozhraní.
+
+*** COMMENT uml code
+  
+#+BEGIN_SRC dot :exports system :results none :file uc-neviem-vsetko-naraz.png :cmdline -Kdot -Tpng
+digraph usecase {
+    rankdir=RB;
+    node [shape=ellipse, fontname="Arial", fontsize=12];
+    edge [fontname="Arial", fontsize=10, dir="none"];  // Nesmerované šípky
+
+    // Actors
+    user [shape=box, label="Užívateľ"];
+    principal [shape=box, label="Principál"];
+
+    // Use cases
+    login [label="Prihlásenie"];
+    enterCredentials [label="Zadať prihlasovacie údaje"];
+    verifyCredentials [label="Overenie údajov"];
+    initializeSession [label="Inicializácia relácie"];
+
+    manageDevices [label="Správa zariadení"];
+    addDevice [label="Pridať zariadenie"];
+    removeDevice [label="Odstrániť zariadenie"];
+    modifyDevice [label="Upravit zariadenie"];
+
+    deviceActions [label="Ovládač zariadenia"];
+    turnOnDevice [label="Zapnúť zariadenie"];
+    turnOffDevice [label="Vypnúť zariadenie"];
+    adjustDeviceSettings [label="Upravit nastavenia zariadenia"];
+
+    viewHistory [label="Zobrazenie histórie"];
+    selectDateRange [label="Výber časového obdobia"];
+    viewGraphData [label="Zobraziť dáta grafu"];
+    exportHistoryData [label="Export dát histórie"];
+
+    manageHooks [label="Správa hookov"];
+    createHook [label="Vytvoriť hook"];
+    deleteHook [label="Zmazať hook"];
+    editHook [label="Upraviť hook"];
+
+    // Relationships
+    user -> login;
+    login -> enterCredentials;
+    login -> verifyCredentials;
+    login -> initializeSession;
+
+    principal -> manageDevices;
+    manageDevices -> addDevice;
+    manageDevices -> removeDevice;
+    manageDevices -> modifyDevice;
+
+    principal -> deviceActions;
+    deviceActions -> turnOnDevice;
+    deviceActions -> turnOffDevice;
+    deviceActions -> adjustDeviceSettings;
+
+    principal -> viewHistory;
+    viewHistory -> selectDateRange;
+    viewHistory -> viewGraphData;
+    viewHistory -> exportHistoryData;
+
+    principal -> manageHooks;
+    manageHooks -> createHook;
+    manageHooks -> deleteHook;
+    manageHooks -> editHook;
+}
+#+END_SRC
+
+
+*** UML diagramy 
+
+[[file:uc-neviem-vsetko-naraz.png]]
