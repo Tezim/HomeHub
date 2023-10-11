@@ -2,6 +2,9 @@ from flask_server_config import app
 import database_handle
 
 
+
+
+
 @app.route("/")
 def home():
     success = database_handle.test_insert()
