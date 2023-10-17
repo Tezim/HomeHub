@@ -35,6 +35,9 @@
         1.  [Aktéri](#orgbd0d96f)
         2.  [Scenár](#orgd5836fc)
         3.  [UML diagramy](#orge4e2199)
+        4.  [Roadmapa](#roadmap)
+5.  [Design-board](#design-board)
+
 
 
 
@@ -64,7 +67,7 @@ Projekt sa zameriava na riešenie vybraných problémov spojených s monitorovan
 
 -   ****Užívateľská prispôsobivosť:**** Každý má iné preferencie týkajúce sa nastavenia svojho domu. Systém by mal byť dostatočne flexibilný, aby mohol zohľadňovať individuálne požiadavky a preferencie užívateľa.
 
-Cieľom tohto projektu je vytvoriť integrovaný systém, ktorý spojí rôzne IoT zariadenia v inteligentnej domácnosti do jednej platformy, zabezpečí ich efektívne spracovanie a analýzu a poskytne užívateľom jasné a zrozumiteľné informácie a nástroje pre ich domácnosť.
+Cieľom projektu HomeHub je vytvoriť integrovaný systém, ktorý spojí rôzne IoT zariadenia v inteligentnej domácnosti do jednej platformy, zabezpečí ich efektívne spracovanie a analýzu a poskytne užívateľom jasné a zrozumiteľné informácie a nástroje pre ich domácnosť.
 
 
 <a id="org33826e1"></a>
@@ -173,6 +176,7 @@ Systém bude podporovať jeden smer škálovania. Hlavým objektom je "domov", k
 
 -   Intuitívne užívateľské rozhranie ako webová stránka.
 -   Jednoduchá registrácia a prihlásenie užívateľa do systému.
+-   Priamočiara prvotná inštalácia systému 
 
 
 <a id="org38786a6"></a>
@@ -202,14 +206,15 @@ Systém bude podporovať jeden smer škálovania. Hlavým objektom je "domov", k
 -   Užívatelia by mali byť schopní pridať nové IoT zariadenie (napr. inteligentnú žiarovku) do systému pomocou jednoduchého formulára.
 -   Možnosť pre užívateľa prezrieť si zoznam pridaných zariadení.
 -   Možnosť pre užívateľa mazať alebo upravovať informácie o pridaných zariadeniach.
--   Sledovať históriu zariadení (hodnôt, interagcií)
+-   Sledovať históriu zariadení (hodnôt, interakcií)
 
 
 <a id="org4c627e9"></a>
 
 ### Ovládanie zariadení
 
--   Možnosť zapnúť/vypnúť inteligentnú žiarovku cez užívateľské rozhranie.
+-   Možnosť zapnúť/vypnúť zariadenia cez užívateľské rozhranie.
+-   Možnosť nastaviť automatizácie pre dom.
 -   Časované a podmienené akcie v systéme.
 -   Zobrazenie aktuálneho stavu zariadenia (zapnuté/vypnuté).
 
@@ -288,10 +293,14 @@ Systém bude podporovať jeden smer škálovania. Hlavým objektom je "domov", k
 ### UML diagramy
 
 **Use-Case diagram** 
+
+Use case diagramy popisujúce základné interakcie so systémom
 ![](use-case.png)
 ![](addition.png)
 **Sekvenčný diagram**
 
+Sekvenčný diagram popisujúci situáciu pridania nového smart zariadenia do domu.
+![](seq.png)
 **Databázový diagrem**
 
 Diagram pre TinyDb zahŕňajúci supported_devices.json súbor, ktorý bude obsahovať zoznam podporovaných inteligentných zariadení
@@ -304,3 +313,6 @@ Databázový diagram dynamickej časti databázy je centorvaný okolo tabuľky r
 ### Roadmap
 
 Link : https://github.com/users/Tezim/projects/2
+
+# Design board
+![](homehub.jpg)
