@@ -109,7 +109,7 @@ Systém je navrhnutý ako modulárna platforma s viacerými komponentami, ktoré
 ### Databáza
 
 -   **TinyDB:** Vhodná pre ukladanie menších súborov, ktoré reprezentujú užívateľské zariadenia.
-
+-   **MongoDB** Pre ukladanie dymanických dát
 
 <a id="orgd20d9f1"></a>
 
@@ -287,5 +287,21 @@ Systém bude podporovať jeden smer škálovania. Hlavým objektom je "domov", k
 
 ### UML diagramy
 
-![img](uc-neviem-vsetko-naraz.png)
+**Use-Case diagram** 
+![](use-case.png)
+**Sekvenčný diagram**
+
+**Databázový diagrem**
+
+Diagram pre TinyDb zahŕňajúci supported_devices.json súbor, ktorý bude obsahovať zoznam podporovaných inteligentných zariadení
+pre HomeHub aplikáciu. Automations.json obsahuje uložené automatizácie pre smart home.
+![](json_db.png)
+
+Databázový diagram dynamickej časti databázy je centorvaný okolo tabuľky room, a obsahuje zariadenia, používateľov a logovací systém.
+![](db.png)
+
+### Roadmap
+
+Link : https://github.com/users/Tezim/projects/2
+
 
