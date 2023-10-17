@@ -289,6 +289,7 @@ Systém bude podporovať jeden smer škálovania. Hlavým objektom je "domov", k
 
 **Use-Case diagram** 
 ![](use-case.png)
+![](addition.png)
 **Sekvenčný diagram**
 
 **Databázový diagrem**
