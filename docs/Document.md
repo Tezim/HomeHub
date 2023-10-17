@@ -303,5 +303,3 @@ Databázový diagram dynamickej časti databázy je centorvaný okolo tabuľky r
 ### Roadmap
 
 Link : https://github.com/users/Tezim/projects/2
-
-
