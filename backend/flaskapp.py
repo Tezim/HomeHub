@@ -1,8 +1,8 @@
 import os
 from flask import redirect, url_for, render_template, request, flash, send_file, session, make_response
 from flask_login import current_user, login_user, logout_user, login_required
-from backend.app_config import app, db, login
-from backend.DTO.user_model import User
+from app_config import app, db, login
+from DTO.user_model import User
 from threading import Thread, Event
 thread = Thread()
 thread_stop_event = Event()
@@ -50,10 +50,14 @@ def dashboard():
 @app.errorhandler(401)
 def unauthorized(e):
     return {}
+@app.errorhandler(500)
+def crash(e):
+    print(e)
 
 
 @app.route("/nope")
 def nope():
+    print("I never gonna ")
     return "I give up :("
 
 
