@@ -1,0 +1,448 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "HomeHub",
+    "description": "Home hub API documentation",
+    "version": "1.0.0"
+  },
+  "host": "nixer.site",
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/login": {
+      "get": {
+        "summary": "Basic endpoint to show login page",
+        "tags": ["Basics"],
+        "parameters": [
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      },
+       "post": {
+          "summary": "Logs in user",
+         "tags": ["Basics"],
+         "parameters": [
+           {
+                    "name": "username",
+                    "in": "formData",
+                    "description": "The username of the user",
+                    "required": true,
+                    "type": "string"
+                },
+           {
+                    "name": "password",
+                    "in": "formData",
+                    "description": "The password of the user",
+                    "required": true,
+                    "type": "string"
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Sucessful operation, returns value based on result",
+            "schema": {
+              "description": "BaseResponse model",
+              "example": {
+                    "description": "",
+                    "status": "Sucess",
+                    "user": {
+                        "email": "test2@test.sk",
+                        "groups": "\"\"",
+                        "id": 1,
+                        "phone": "788",
+                        "photo": "\"/path\"",
+                        "twoF_enabled": false,
+                        "username": "help"
+                    }
+              }
+            }
+           }
+         }
+       }
+    },
+    "/logout" : {
+      "get": {
+        "tags": ["Basics"],
+        "description": "Logs out current user, function is annotated with login required-should not return error code",
+        "responses": {
+          "200": {
+            "description": "Redirects to /login page on success"
+          },
+          "401": {
+            "description": "Unauthorized use",
+            "schema": {
+               "example": {
+               "unauthorized": "True"
+            }
+            }
+          }
+        }
+      }
+    },
+    "/profile": {
+      "get": {
+        "tags": ["Profile"],
+        "description": "Base profile endpoint - redirects user to /profile/general",
+        "responses": {
+          "200": {
+            "schema": {
+              "example": {}
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/profile/general": {
+      "get": {
+        "tags": ["Profile"],
+        "description": "Display general account info-takes user as current_user from BE",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                  "email": "test2@test.sk",
+                  "groups": "\"\"",
+                  "id": 1,
+                  "phone": "788",
+                  "photo": "\"/path\"",
+                  "twoF_enabled": false,
+                  "username": "help"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized use",
+            "schema": {
+              "example": {
+                "Unauthorized": "True"
+              }
+            }
+          },
+          "404": {
+            "description": "Database error handler"
+          }
+        }
+
+      }
+      ,
+      "post": {
+        "tags": ["Profile"],
+        "description": "Handles update of profile info, parameters are required, if not provided function expects empty string",
+        "parameters": [
+          {
+            "name": "username",
+            "type": "string",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "name": "phone",
+            "type": "string",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "name": "groups",
+            "type": "string",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "name": "photo",
+            "type": "string",
+            "in": "formData",
+            "required": true,
+            "description": "system path to photo"
+          }
+        ],
+        "responses": {
+          "200" : {
+            "description": "Successful profile update",
+            "schema": {
+              "example": {
+                  "email": "test2@test.sk",
+                  "groups": "\"\"",
+                  "id": 1,
+                  "phone": "788",
+                  "photo": "\"/path\"",
+                  "twoF_enabled": false,
+                  "username": "hello"
+              }
+            }
+          },
+          "403" : {
+            "description": "Username is not valid",
+            "schema": {
+              "example": {
+                "db_error" : "Username already in use"
+              }
+            }
+          }
+
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": ["Basics"],
+        "description": "Redirects user on login if unauthenticated els eon dashboard",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/profile/security": {
+      "get": {
+        "tags": ["Profile"],
+        "description": "Show security settings",
+        "responses": {
+          "200": {
+            "description": "Returns user data, but we only expect to show two factor",
+            "schema": {
+              "example": {
+                  "email": "test2@test.sk",
+                  "groups": "\"\"",
+                  "id": 1,
+                  "phone": "788",
+                  "photo": "\"/path\"",
+                  "twoF_enabled": false,
+                  "username": "hello"
+              }
+            }
+          },
+          "404" : {
+            "description": "Database error handler",
+            "schema": {
+              "example": {"db_error": "turn on 2F"}
+            }
+          },
+          "401": {
+            "schema": {
+              "example": {"unathorized": "true"}
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": ["Profile"],
+        "description": "Update two factor",
+        "parameters": [{
+          "name": "two_factor",
+          "in": "formData",
+          "type": "integer"
+        }],
+        "responses": {
+          "200": {
+            "description": "Returns empty json on success",
+            "schema": {
+              "example": {}
+            }
+          },
+          "400": {
+            "description": "Dabase error handler",
+            "schema": {
+              "example": {"db_error": "turn on 2F"}
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unathorized": "true"}
+            }
+          }
+        }
+      }
+    },
+    "/profile/groups": {
+      "get": {
+        "tags": ["Profile"],
+        "description": "Returns list of all groups available, response depends on is_admin variable in current user(*means field visible for admin)",
+        "responses": {
+          "200": {
+            "schema": {
+              "example": [
+                  {
+                      "ID": 1,
+                      "Name": "Parents",
+                      "*Users" : "1,2,3"
+                  },
+                {
+                      "ID": 2,
+                      "Name": "Guests",
+                      "*Users" : "1,2,3"
+                  }
+              ]
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unauthorized": "true"}
+            }
+          }
+        }
+      }
+    },
+    "/profile/groups<group_id>": {
+      "get": {
+        "tags": ["Profile"],
+        "description": "Shows group detail by id in path, this option should be available only to user with is_admin = 1, supporting function get_users() is available only for admins",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "path",
+            "description": "",
+            "type": "integer",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200" : {
+            "description": "Returns group detail ",
+            "schema": {
+              "example": {
+                      "ID": 2,
+                      "Name": "Guests",
+                      "Users" : "1,2,3"
+              }
+            }
+          },
+          "400": {
+            "description": "Database error handle",
+            "schema": {
+              "example": {"Db_error" : "group_detail"}
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unauthorized": "true"}
+            }
+          }
+        }
+      }
+    },
+    "/profile/groups/add": {
+      "post": {
+        "tags": ["Profile"],
+        "description": "Add group to database, only available to user with is_admin = 1",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "users",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+            "200": {
+              "description": "Returns newly added group",
+              "schema": {
+                "example": {
+                      "ID": 2,
+                      "Name": "Guests",
+                      "Users" : "1,2,3"
+                }
+              }
+            },
+          "400": {
+            "description": "Database error handler",
+            "schema": {
+              "example": {"Db_error" : "add_group"}
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unauthorized": "true"}
+            }
+          }
+        }
+      }
+    },
+    "/profile/reminders": {
+      "get": {
+        "tags": ["Profile"],
+        "description": "Under construction",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/profile/pwd-reset": {
+      "get": {
+        "tags": ["Profile"],
+        "responses": {
+          "200": {
+            "schema": {
+              "example": {}
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": ["Profile"],
+        "description": "Resets password of current user",
+        "parameters": [
+          {
+            "name": "password",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Succesfull update",
+            "schema": {
+              "example": {}
+            }
+          },
+          "400": {
+            "description": "Database exception",
+            "schema": {
+              "example": {}
+            }
+          },
+          "401": {
+            "schema": {
+              "example": {"unauthorized":  "true"}
+            },
+            "description": ""
+          }
+        }
+      }
+    }
+
+
+
+  }
+}

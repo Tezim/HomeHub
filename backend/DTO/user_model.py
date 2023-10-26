@@ -1,6 +1,6 @@
 from flask_login import UserMixin
 
-from app_config import db
+from backend.app_config import db
 
 
 class User(db.Model, UserMixin):
@@ -9,16 +9,21 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(100))
     email = db.Column(db.String(255))
     psswd = db.Column(db.String(255))
-    is_active = db.Column(db.Boolean, default=True)
-    authenticated = db.Column(db.Boolean, default=False)
+    phone = db.Column(db.String(255))
+    goups = db.Column(db.String(255))
+    photo = db.Column(db.String(255))
+    is_admin = db.Column(db.Integer, default=False)
+    two_factor = db.Column(db.Boolean, default=True)
+
 
     def __init__(self, name, email, psswd):
         self.name = name
         self.email = email
         self.psswd = psswd
 
+
     def is_authenticated(self):
-        return self.is_active
+        return self.is_active()
 
     def is_active(self):
         return True
@@ -44,12 +49,6 @@ class User(db.Model, UserMixin):
             return User.query.filter_by(email=email).first()
         except:
             return None
-
-    def getPublicKey(id):
-        return User.query.filter_by(user_id=id).first().pub
-
-    def getPrivateKey(id):
-        return User.query.filter_by(user_id=id).first().priv
 
     def getUserbyId(id):
         try:
