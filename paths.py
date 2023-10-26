@@ -1,0 +1,1 @@
+PHOTO_DIRECTORY_DEFAULT = "C:\\Users\\Tatiana\\Documents\\GitHub\\HomeIO\\photos\\default.jpg"
