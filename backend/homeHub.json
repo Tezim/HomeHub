@@ -440,7 +440,629 @@
           }
         }
       }
+    },
+    "/devices": {
+      "get": {
+        "tags": ["Devices"],
+        "description": "redirect to /devices/all",
+        "responses": {
+          "200": {},
+          "405": {}
+        }
+      }
+    },
+  "/devices/all" : {
+    "get": {
+      "tags": ["Devices"],
+      "description": "Returns set of all devices available",
+      "responses": {
+        "200": {
+          "description": "",
+          "schema": {
+            "example": [{
+                  "IP_address": "10.0.0.0",
+                  "MAC_address": "aa-aa-aa-aa-aa-aa",
+                  "add_info": "{}",
+                  "category": 1,
+                  "created": "Tue, 31 Oct 2023 16:36:24 GMT",
+                  "device_id": 5,
+                  "modified": "Tue, 31 Oct 2023 16:36:24 GMT",
+                  "name": "Light",
+                  "owner": 1,
+                  "room_id": 1,
+                  "status": null
+              },{
+                  "IP_address": "10.0.0.1",
+                  "MAC_address": "ab-ab-ab-ab-ab-ab",
+                  "add_info": "{}",
+                  "category": 1,
+                  "created": "Tue, 31 Oct 2023 16:38:38 GMT",
+                  "device_id": 6,
+                  "modified": "Tue, 31 Oct 2023 16:38:38 GMT",
+                  "name": "Light",
+                  "owner": 1,
+                  "room_id": 1,
+                  "status": null
+              }]
+          }
+        },
+        "401": {
+          "description": "",
+          "schema": {
+            "example": {"unauthorized": "True"}
+          }
+        },
+        "404": {
+          "description": "",
+          "schema": {
+            "example": {}
+          }
+        }
+      }
     }
+  },
+    "/devices/add" : {
+      "get": {
+        "tags": ["Devices"],
+        "description": "Does nothing really",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {}
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unathorized": "true"}
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Devices"],
+        "description": "Tries to add device, for all parameters send empty string if value is not provided",
+        "parameters": [
+          {
+            "required": true,
+            "name": "name",
+            "in": "formData",
+            "type": "string"
+          },
+          {
+            "required": true,
+            "name": "room_id",
+            "in": "formData",
+            "type": "string"
+          },
+          {
+            "required": true,
+            "name": "ip_address",
+            "in": "formData",
+            "type": "string"
+          },
+          {
+            "required": true,
+            "name": "mac_address",
+            "in": "formData",
+            "type": "string"
+          },
+          {
+            "required": true,
+            "name": "more_info",
+            "in": "formData",
+            "type": "string",
+            "description": "parameter should be json object in string"
+          },
+          {
+            "required": true,
+            "name": "category_id",
+            "in": "formData",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                    "IP_address": "10.0.0.0",
+                    "MAC_address": "aa-aa-aa-aa-aa-aa",
+                    "add_info": "{}",
+                    "category": 1,
+                    "created": "Tue, 31 Oct 2023 16:36:24 GMT",
+                    "device_id": 5,
+                    "modified": "Tue, 31 Oct 2023 16:36:24 GMT",
+                    "name": "Light",
+                    "owner": 1,
+                    "room_id": 1,
+                    "status": null
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unauthorized": "true"}
+            }
+          },
+          "404": {}
+        }
+      }
+    },
+    "/devices/room/<name>": {
+      "get": {
+        "tags": [
+          "Devices"
+        ],
+        "description": "Returns all devices in room with provided id",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "type": "integer",
+            "description": "room id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": [{
+                  "IP_address": "10.0.0.0",
+                  "MAC_address": "aa-aa-aa-aa-aa-aa",
+                  "add_info": "{}",
+                  "category": 1,
+                  "created": "Tue, 31 Oct 2023 16:36:24 GMT",
+                  "device_id": 5,
+                  "modified": "Tue, 31 Oct 2023 16:36:24 GMT",
+                  "name": "Light",
+                  "owner": 1,
+                  "room_id": 1,
+                  "status": null
+              },{
+                  "IP_address": "10.0.0.1",
+                  "MAC_address": "ab-ab-ab-ab-ab-ab",
+                  "add_info": "{}",
+                  "category": 1,
+                  "created": "Tue, 31 Oct 2023 16:38:38 GMT",
+                  "device_id": 6,
+                  "modified": "Tue, 31 Oct 2023 16:38:38 GMT",
+                  "name": "Light",
+                  "owner": 1,
+                  "room_id": 1,
+                  "status": null
+              }]
+            }
+          },
+          "401": {
+            "schema": {
+              "example": {"unauthorized": "true"}
+            },
+            "description": ""
+          },
+          "404": {}
+        }
+      }
+    },
+    "/devices/room/<name>/<id>": {
+      "get": {
+        "tags": ["Devices"],
+        "description": "Returns single device with specified id in chosen room, use for detail",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "Room id"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "device id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                  "IP_address": "10.0.0.1",
+                  "MAC_address": "ab-ab-ab-ab-ab-ab",
+                  "add_info": "{}",
+                  "category": 1,
+                  "created": "Tue, 31 Oct 2023 16:38:38 GMT",
+                  "device_id": 6,
+                  "modified": "Tue, 31 Oct 2023 16:38:38 GMT",
+                  "name": "Light",
+                  "owner": 1,
+                  "room_id": 1,
+                  "status": null
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unathorized": "true"}
+            }
+          },
+          "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error": "device_update"}
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Devices"],
+        "description": "Update device inside detail, if value is not provided send an empty string",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "room_id",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "status",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "ip_address",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "mac_address",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "more_info",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "category",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                  "IP_address": "10.0.0.1",
+                  "MAC_address": "ab-ab-ab-ab-ab-ab",
+                  "add_info": "{}",
+                  "category": 1,
+                  "created": "Tue, 31 Oct 2023 16:38:38 GMT",
+                  "device_id": 6,
+                  "modified": "Tue, 31 Oct 2023 16:38:38 GMT",
+                  "name": "Light",
+                  "owner": 1,
+                  "room_id": 1,
+                  "status": null
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unathorized": "true"}
+            }
+          },
+          "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error" :  "device_update"}
+            }
+          }
+        }
+      }
+    },
+     "/devices/category/<name>": {
+      "get": {
+        "tags": [
+          "Devices"
+        ],
+        "description": "Returns all devices in category with provided id",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "type": "integer",
+            "description": "category id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": [{
+                  "IP_address": "10.0.0.0",
+                  "MAC_address": "aa-aa-aa-aa-aa-aa",
+                  "add_info": "{}",
+                  "category": 1,
+                  "created": "Tue, 31 Oct 2023 16:36:24 GMT",
+                  "device_id": 5,
+                  "modified": "Tue, 31 Oct 2023 16:36:24 GMT",
+                  "name": "Light",
+                  "owner": 1,
+                  "room_id": 1,
+                  "status": null
+              },{
+                  "IP_address": "10.0.0.1",
+                  "MAC_address": "ab-ab-ab-ab-ab-ab",
+                  "add_info": "{}",
+                  "category": 1,
+                  "created": "Tue, 31 Oct 2023 16:38:38 GMT",
+                  "device_id": 6,
+                  "modified": "Tue, 31 Oct 2023 16:38:38 GMT",
+                  "name": "Light",
+                  "owner": 1,
+                  "room_id": 1,
+                  "status": null
+              }]
+            }
+          },
+          "401": {
+            "schema": {
+              "example": {"unauthorized": "true"}
+            },
+            "description": ""
+          },
+          "404": {}
+        }
+      }
+    },
+     "/devices/category/<name>/<id>": {
+      "get": {
+        "tags": ["Devices"],
+        "description": "Returns single device with specified id in chosen room, use for detail",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "Room id"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "device id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                  "IP_address": "10.0.0.1",
+                  "MAC_address": "ab-ab-ab-ab-ab-ab",
+                  "add_info": "{}",
+                  "category": 1,
+                  "created": "Tue, 31 Oct 2023 16:38:38 GMT",
+                  "device_id": 6,
+                  "modified": "Tue, 31 Oct 2023 16:38:38 GMT",
+                  "name": "Light",
+                  "owner": 1,
+                  "room_id": 1,
+                  "status": null
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unathorized": "true"}
+            }
+          },
+          "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error": "device_update"}
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Devices"],
+        "description": "Update device inside detail, if value is not provided send an empty string",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "room_id",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "status",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "ip_address",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "mac_address",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "more_info",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "category",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                  "IP_address": "10.0.0.1",
+                  "MAC_address": "ab-ab-ab-ab-ab-ab",
+                  "add_info": "{}",
+                  "category": 1,
+                  "created": "Tue, 31 Oct 2023 16:38:38 GMT",
+                  "device_id": 6,
+                  "modified": "Tue, 31 Oct 2023 16:38:38 GMT",
+                  "name": "Light",
+                  "owner": 1,
+                  "room_id": 1,
+                  "status": null
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unathorized": "true"}
+            }
+          },
+          "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error" :  "device_update"}
+            }
+          }
+        }
+      }
+    },
+    "/rooms/add": {
+      "post": {
+        "tags": ["Rooms"],
+        "description": "Creates new room",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "story",
+            "in": "formData",
+            "type": "string",
+            "required": true,
+            "description": "level of house in which the room is located"
+          },
+          {
+            "name": "size",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                  "name": "Bathroom",
+                  "room_id": 4,
+                  "size": 67.0,
+                  "story": 1
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unathorized":  "true"}
+            }
+          },
+          "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error": "add_room"}
+            }
+          }
+        }
+      }
+    },
+    "/rooms" : {
+      "get": {
+        "tags": ["Rooms"],
+        "description": "Returns all rooms defined in house",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": [
+                    {
+                        "name": "living room",
+                        "room_id": 1,
+                        "size": 23.0,
+                        "story": 0
+                    },
+                    {
+                        "name": "Kitchen",
+                        "room_id": 2,
+                        "size": 50.0,
+                        "story": 0
+                    }
+                ]
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unauthorized": "true"}
+            }
+          },
+          "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error": "get_rooms"}
+            }
+          }
+        }
+      }
+    }
+
 
 
 
