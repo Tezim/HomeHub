@@ -5,10 +5,14 @@ from flask_login import current_user, login_user, logout_user, login_required
 import paths
 from backend import helpers
 from backend.DTO.base_response_model import BaseResponse
+from backend.DTO.category_model import Category
+from backend.DTO.device_DTO import DeviceDTO
 from backend.DTO.goup_model import Group
+from backend.DTO.room_model import Room
 from backend.DTO.user_DTO import UserDTO
 from backend.app_config import app, db, login
 from backend.DTO.user_model import User
+from backend.DTO.device_model import Device
 from threading import Thread, Event
 
 thread = Thread()
@@ -21,12 +25,8 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-
-
-
-
 def create_admin():
-    admin = User("Admin", "admin@homehub.site",helpers.pwd_hash("admin") )
+    admin = User("Admin", "admin@homehub.site", helpers.pwd_hash("admin"))
     admin.phone = "+421xxxxxxxxxx"
     admin.photo = paths.PHOTO_DIRECTORY_DEFAULT
     admin.goups = ""
@@ -35,12 +35,12 @@ def create_admin():
 
     return admin
 
+
 with app.app_context():
-    db.drop_all()
+    # db.drop_all()
     db.create_all()
     db.session.add(create_admin())
     db.session.commit()
-
 
 
 @app.route("/")
@@ -99,7 +99,7 @@ def profile():
     return redirect('profile/general')
 
 
-@app.route("/profile/general", methods = ['GET','POST'])
+@app.route("/profile/general", methods=['GET', 'POST'])
 @login_required
 def profile_gen():
     if request.method == 'GET':
@@ -135,7 +135,8 @@ def profile_gen():
         return jsonify(UserDTO(user).to_json())
     return {}
 
-def  list_groups():
+
+def list_groups():
     groups = Group.query.all()
     response = []
     for group in groups:
@@ -169,24 +170,27 @@ def profile_sec():
         except Exception:
             return Response("{'db_error': 'turn on 2F'}", status=400)
 
+
 @app.route("/profile/groups", methods=['GET', 'POST'])
 @login_required
 def profile_group():
     if request.method == 'GET':
         return list_groups()
 
+
 @app.route("/profile/groups<group_id>")
 @login_required
 def group_detail(group_id):
     if current_user.is_admin == 1:
         try:
-            group = Group.query.get(group_id = group_id).first()
+            group = Group.query.get(group_id=group_id).first()
             return jsonify(group.to_json())
         except Exception:
-            return Response("{'Db_error' : 'group_detail'}",status=400)
+            return Response("{'Db_error' : 'group_detail'}", status=400)
     return Response("{'unauthorized': True}", status=401, mimetype='application/json')
 
-@app.route("/profile/groups/add", methods = ['POST'])
+
+@app.route("/profile/groups/add", methods=['POST'])
 @login_required
 def add_group(group_data):
     if current_user.is_authenticated:
@@ -194,7 +198,7 @@ def add_group(group_data):
             name = group_data['name']
             users = group_data['users']
             try:
-                g = Group.query.get(group_name = name).firt()
+                g = Group.query.get(group_name=name).firt()
                 if g is not None:
                     return Response("{'db_error':'Group name exists'}", status=403)
                 new_group = Group(name, users)
@@ -203,7 +207,7 @@ def add_group(group_data):
                 g = Group.query.get(group_name=name).firt()
                 return jsonify(g.to_json())
             except Exception:
-                return Response("{'Db_error' : 'add_group'}",status=400)
+                return Response("{'Db_error' : 'add_group'}", status=400)
     return Response("{'unauthorized': True}", status=401, mimetype='application/json')
 
 
@@ -217,12 +221,14 @@ def get_users():
             return jsonify(response)
     return Response("{'unauthorized': True}", status=401, mimetype='application/json')
 
+
 @app.route("/profile/reminders")
 @login_required
 def profile_rem():
     return {"reminders": "working"}
 
-@app.route("/profile/pwd-reset", methods=['GET','POST'])
+
+@app.route("/profile/pwd-reset", methods=['GET', 'POST'])
 @login_required
 def reset_password():
     if request.method == "POST":
@@ -237,11 +243,223 @@ def reset_password():
     else:
         return {}
 
+
 # _________________________________________________________________________
 @app.route("/dashboard")
+@login_required
 def dashboard():
     return {"dahboard": "working"}
 
+
+# __________________________________________________________________________
+# ______________________ devices____________________________________________
+
+@app.route("/devices")
+@login_required
+def devices_redirect():
+    return redirect("devices/all")
+
+
+@app.route("/devices/all")
+@login_required
+def devices_all():
+    try:
+        devices = Device.query.all()
+        response = []
+        for device in devices:
+            response.append(DeviceDTO(device).to_json())
+        return jsonify(response)
+    except Exception:
+        return Response("{'db_error':'device_all}", status=404)
+
+
+@app.route("/devices/add", methods=['GET', 'POST'])
+@login_required
+def devices_add():
+    if request.method == 'GET':
+        return {}
+    else:
+        new_dev = Device()
+        new_dev.name = request.form["name"].strip()
+        new_dev.room_id = request.form["room_id"].strip()
+        # new_dev.status = request.form["status"].strip()
+        new_dev.ip_address = request.form["ip_address"].strip()
+        new_dev.mac_address = request.form["mac_address"].strip()
+        new_dev.more_info = request.form["more_info"].strip()
+        new_dev.category_id = request.form["category"].strip()
+        new_dev.owner = current_user.user_id
+        try:
+            db.session.add(new_dev)
+            db.session.commit()
+            return jsonify(DeviceDTO(new_dev).to_json()) if current_user.is_admin \
+                else jsonify(DeviceDTO(new_dev).to_json_user())
+        except Exception as e:
+            print(e)
+            return Response("{'db_error':'device_add}", status=404)
+
+
+@app.route("/devices/room/<name>", defaults={'id': None})
+@app.route("/devices/room/<name>/<id>", methods=['GET', 'POST'])
+@login_required
+def devices_rooms(name, id):
+    if id is None:
+        devices = Device.query.filter_by(room_id=name)
+        response = []
+        for device in devices:
+            if current_user.is_admin:
+                response.append(DeviceDTO(device).to_json())
+            else:
+                response.append(DeviceDTO(device).to_json_user())
+        return jsonify(response)
+    else:
+        if request.method == 'GET':
+            try:
+                device = Device.query.filter_by(device_id=id).first()
+                return jsonify(DeviceDTO(device).to_json()) if current_user.is_admin \
+                    else jsonify(DeviceDTO(device).to_json_user())
+            except Exception:
+                return Response("{'db_error':'device does not exist'}", status=404)
+        else:
+            try:
+                device = Device.query.filter_by(device_id=id).first()
+                name = request.form['name'].strip()
+                if name != "":
+                    device.name = name
+                room_id = request.form['room_id'].strip()
+                if room_id != "":
+                    device.room_id = room_id
+                status = request.form['status'].strip()
+                if status != "":
+                    device.status = status
+                ip = request.form['ip_address'].strip()
+                if ip != "":
+                    device.ip_address = ip
+                mac = request.form['mac_address'].strip()
+                if mac != "":
+                    device.mac_address = mac
+                more = request.form['more_info'].strip()
+                if more != "":
+                    device.more_info = more
+                category = request.form['category'].strip()
+                if category != "":
+                    device.category_id = category
+                try:
+                    db.session.add(device)
+                    db.session.commit()
+                    return jsonify(DeviceDTO(device).to_json()) if current_user.is_admin \
+                        else jsonify(DeviceDTO(device).to_json_user())
+                except Exception:
+                    db.session.rollback()
+                    return Response("{'db_error':'device_update'}", status=404)
+            except Exception:
+                return Response("{'db_error':'device_update'}", status=404)
+
+
+@app.route("/devices/category/<name>", defaults={'id': None})
+@app.route("/devices/category/<name>/<id>", methods=['GET', 'POST'])
+@login_required
+def devices_type(name, id):
+    if id is None:
+        devices = Device.query.filter_by(category_id=name)
+        response = []
+        for device in devices:
+            if current_user.is_admin:
+                response.append(DeviceDTO(device).to_json())
+            else:
+                response.append(DeviceDTO(device).to_json_user())
+        return jsonify(response)
+    else:
+        if request.method == 'GET':
+            try:
+                device = Device.query.filter_by(device_id=id).first()
+                return jsonify(DeviceDTO(device).to_json()) if current_user.is_admin \
+                    else jsonify(DeviceDTO(device).to_json_user())
+            except Exception:
+                return Response("{'db_error':'device does not exist'}", status=404)
+        else:
+            try:
+                device = Device.query.filter_by(device_id=id).first()
+                name = request.form['name'].strip()
+                if name != "":
+                    device.name = name
+                room_id = request.form['room_id'].strip()
+                if room_id != "":
+                    device.room_id = room_id
+                status = request.form['status'].strip()
+                if status != "":
+                    device.status = status
+                ip = request.form['ip_address'].strip()
+                if ip != "":
+                    device.ip_address = ip
+                mac = request.form['mac_address'].strip()
+                if mac != "":
+                    device.mac_address = mac
+                more = request.form['more_info'].strip()
+                if more != "":
+                    device.more_info = more
+                category = request.form['category'].strip()
+                if category != "":
+                    device.category_id = category
+                try:
+                    db.session.add(device)
+                    db.session.commit()
+                    return jsonify(DeviceDTO(device).to_json()) if current_user.is_admin \
+                        else jsonify(DeviceDTO(device).to_json_user())
+                except Exception:
+                    db.session.rollback()
+                    return Response("{'db_error':'device_update'}", status=404)
+            except Exception:
+                return Response("{'db_error':'device_update'}", status=404)
+
+
+# ______ room subset _______________________
+
+@app.route("/rooms/add", methods=['POST'])
+@login_required
+def add_room():
+    name = request.form['name'].strip()
+    story = request.form['story'].strip()
+    size = request.form['size'].strip()
+
+    new_room = Room()
+    new_room.name = name
+    new_room.story = story
+    new_room.size = size
+
+    try:
+        db.session.add(new_room)
+        db.session.commit()
+        return jsonify(new_room.to_json())
+    except Exception:
+        return Response("{'db_error':'add_room'}", status=404)
+
+
+
+@app.route("/rooms")
+@login_required
+def get_rooms():
+    try:
+        rooms = Room.query.all()
+        response = []
+        for room in rooms:
+            response.append(room.to_json())
+        return jsonify(response)
+    except Exception:
+        return Response("{'db_error': 'get_rooms'}",status=404)
+
+
+def get_categories():
+    try:
+        categories = Category.query.all()
+        response = []
+        for category in categories:
+            response.append(category.to_json())
+        return jsonify(response)
+    except Exception:
+        return {'db_error': 'get_rooms'}
+
+
+# _________________________________________________________________________
 
 @app.errorhandler(401)
 def unauthorized(e):
