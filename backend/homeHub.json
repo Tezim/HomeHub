@@ -1061,6 +1061,79 @@
           }
         }
       }
+    },
+
+     "/categories" : {
+      "get": {
+        "tags": ["Categories"],
+        "description": "Returns all categories defined in house",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": [
+                    {
+                        "name": "Light",
+                        "category_id": 1
+                    },
+                    {
+                        "name": "Sockets",
+                        "category_id": 2
+                    }
+                ]
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unauthorized": "true"}
+            }
+          },
+          "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error": "get_categories"}
+            }
+          }
+        }
+      }
+    },
+     "/categories/add": {
+      "post": {
+        "tags": ["Categories"],
+        "description": "Creates new category",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                  "name": "Light",
+                  "category_id": 1
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unathorized":  "true"}
+            }
+          },
+          "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error": "add_category"}
+            }
+          }
+        }
+      }
     }
 
 

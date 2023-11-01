@@ -447,7 +447,23 @@ def get_rooms():
     except Exception:
         return Response("{'db_error': 'get_rooms'}",status=404)
 
+# ______________________category subset______________________
 
+@app.route("/categories/add", methods=['POST'])
+@login_required
+def add_cat():
+    name = request.form['name'].strip()
+    new_category = Category()
+    new_category.name = name
+    try:
+        db.session.add(new_category)
+        db.session.commit()
+        return jsonify(new_category.to_json())
+    except Exception:
+        return Response("{'db_error':'add_category'}", status=404)
+
+@app.route("/categories")
+@login_required
 def get_categories():
     try:
         categories = Category.query.all()
@@ -456,7 +472,7 @@ def get_categories():
             response.append(category.to_json())
         return jsonify(response)
     except Exception:
-        return {'db_error': 'get_rooms'}
+        return {'db_error': 'get_categories'}
 
 
 # _________________________________________________________________________
