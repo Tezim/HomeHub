@@ -10,7 +10,7 @@ from backend.DTO.device_DTO import DeviceDTO
 from backend.DTO.goup_model import Group
 from backend.DTO.room_model import Room
 from backend.DTO.user_DTO import UserDTO
-from backend.app_config import app, db, login
+from backend.app_config import app, db, login, tiny_db
 from backend.DTO.user_model import User
 from backend.DTO.device_model import Device
 from threading import Thread, Event
@@ -476,7 +476,20 @@ def get_categories():
 
 
 # _________________________________________________________________________
+#_____________________________available devices ___________________________
 
+
+def get_categores_devices():
+    return tiny_db.tables()
+
+
+def get_available_devices(table_name):
+    tab = tiny_db.table(table_name)
+    return tab.all()
+
+
+
+# _________________________________________________________________________
 @app.errorhandler(401)
 def unauthorized(e):
     return Response("{'unauthorized': True}", status=401, mimetype='application/json')
