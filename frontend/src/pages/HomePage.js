@@ -73,81 +73,90 @@ const HomePage = () => {
   return (
     <div
       style={{
-        display: authenticated ? "flex" : "none",
-        flexDirection: "column",
-        flexGrow: 1,
-        backgroundColor: "#1f1f1f",
-        borderRadius: "15px",
-        padding: "5px",
-        margin: "10px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
-      <PageHeader
-        headerText={"Summary"}
-        button={{
-          event: () => console.log("Home Page"),
-          text: "Add device",
-        }}
-      />
       <div
         style={{
-          display: "flex",
-          margin: "5px 0px 0px 10px",
-          justifyContent: "space-between",
+          display: authenticated ? "flex" : "none",
+          flexDirection: "column",
+          flexGrow: 1,
+          backgroundColor: "#1f1f1f",
+          borderRadius: "15px",
+          padding: "5px",
+          margin: "10px",
+          maxWidth: "75vw",
         }}
       >
-        <div style={{ display: "flex" }}>
-          {rooms.map((r, i) => {
-            return (
-              <div
-                style={{
-                  cursor: "pointer",
-                  marginRight: "20px",
-                  color: selectedRoom?.name === r.name ? "white" : "#858483",
-                  borderBottom:
-                    selectedRoom?.name === r.name
-                      ? "1px solid orange"
-                      : "inherit",
-                }}
-                onClick={() => setSelectedRoom(r)}
-                key={i}
-              >
-                {r.name}
-              </div>
-            );
-          })}
-        </div>
-        <button
+        <PageHeader
+          headerText={"Summary"}
+          button={{
+            event: () => console.log("Home Page"),
+            text: "Add device",
+          }}
+        />
+        <div
           style={{
-            borderRadius: "10px",
-            border: "none",
-            backgroundColor: "orange",
-            fontFamily: "inherit",
-            fontSize: "15px",
-            padding: "3px 8px 3px 8px",
-            marginRight: "10px",
-            cursor: "pointer",
+            display: "flex",
+            margin: "5px 0px 0px 10px",
+            justifyContent: "space-between",
           }}
         >
-          <div
+          <div style={{ display: "flex" }}>
+            {rooms.map((r, i) => {
+              return (
+                <div
+                  style={{
+                    cursor: "pointer",
+                    marginRight: "20px",
+                    color: selectedRoom?.name === r.name ? "white" : "#858483",
+                    borderBottom:
+                      selectedRoom?.name === r.name
+                        ? "1px solid orange"
+                        : "inherit",
+                  }}
+                  onClick={() => setSelectedRoom(r)}
+                  key={i}
+                >
+                  {r.name}
+                </div>
+              );
+            })}
+          </div>
+          <button
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              borderRadius: "10px",
+              border: "none",
+              backgroundColor: "orange",
+              fontFamily: "inherit",
+              fontSize: "15px",
+              padding: "3px 8px 3px 8px",
+              marginRight: "10px",
+              cursor: "pointer",
             }}
           >
-            Customize
-            <img
-              src={"/equalizer.png"}
-              style={{ width: "20px", height: "20px", marginLeft: "10px" }}
-              alt={"customize"}
-            />
-          </div>
-        </button>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              Customize
+              <img
+                src={"/equalizer.png"}
+                style={{ width: "20px", height: "20px", marginLeft: "10px" }}
+                alt={"customize"}
+              />
+            </div>
+          </button>
+        </div>
+        <RoomSettings categories={categories} />
+        <PageHeader headerText={"Quick use"} />
+        <AppliancesSettings appliances={devices} />
       </div>
-      <RoomSettings categories={categories} />
-      <PageHeader headerText={"Quick use"} />
-      <AppliancesSettings appliances={devices} />
     </div>
   );
 };
