@@ -1,5 +1,5 @@
 import { useState } from "react";
-import CustomSlider from "./CustomSlider";
+import CustomSlider from "./custom/CustomSlider";
 
 const ApplianceBubble = ({ appliance }) => {
   const [isOn, setIsOn] = useState(appliance.state);

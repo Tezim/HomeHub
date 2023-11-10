@@ -1,5 +1,5 @@
 import { useState } from "react";
-import CustomSlider from "./CustomSlider";
+import CustomSlider from "./custom/CustomSlider";
 
 const InfoBubble = ({ text, info, img, slider, temperature }) => {
   const [isOn, setIsOn] = useState(slider);
