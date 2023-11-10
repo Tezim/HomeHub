@@ -1,5 +1,8 @@
+import { useNavigate } from "react-router-dom";
 import DevicesScroll from "../components/DevicesScroll";
 import PageHeader from "../components/PageHeader";
+import { useEffect } from "react";
+import { isAuthenticated } from "../components/helpers/Helpers";
 
 const appliances = [
   {
@@ -55,10 +58,17 @@ const appliances = [
 ];
 
 const DevicesPage = () => {
+  const history = useNavigate();
+  const authenticated = isAuthenticated();
+
+  useEffect(() => {
+    if (!authenticated) history("/");
+  }, []);
+
   return (
     <div
       style={{
-        display: "flex",
+        display: authenticated ? "flex" : "none",
         flexDirection: "column",
         flexGrow: 1,
         backgroundColor: "#1f1f1f",

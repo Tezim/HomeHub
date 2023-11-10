@@ -3,6 +3,7 @@ import { loginUser } from "../components/services/UserService";
 import { useNavigate } from "react-router-dom";
 import CustomInput from "../components/custom/CustomInput";
 import CustomButton from "../components/custom/CustomButton";
+import CustomLoading from "../components/custom/CustomLoading";
 
 const LoginPage = () => {
   const [userName, setUserName] = useState("");
@@ -15,13 +16,13 @@ const LoginPage = () => {
     formData.append("password", password);
     loginUser(formData)
       .then((response) => {
-        sessionStorage.setItem("autheticated", response.data.user.email);
+        sessionStorage.setItem("authenticated", response.data.user.email);
       })
       .then(() => history("/home"));
   };
 
   useEffect(() => {
-    sessionStorage.removeItem("autheticated");
+    sessionStorage.removeItem("authenticated");
   }, []);
 
   return (

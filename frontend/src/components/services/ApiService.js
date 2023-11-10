@@ -59,7 +59,7 @@ export async function putData(endpoint, putData, queryParams = {}) {
 }
 
 export async function getDataPromise(endpoint, queryParams = {}) {
-  return fetchApi.get(document.getElementById("root").baseURI + endpoint, {
+  return fetchApi.get(endpoint, {
     params: queryParams,
   });
 }
@@ -69,11 +69,11 @@ export async function postDataPromise(endpoint, postData) {
 }
 
 export async function deleteDataPromise(endpoint, queryParams = {}) {
-  return fetchApi.delete(document.getElementById("root").baseURI + endpoint, {
+  return fetchApi.delete(endpoint, {
     params: queryParams,
   });
 }
 
 export async function putDataPromise(endpoint, data) {
-  return fetchApi.put(document.getElementById("root").baseURI + endpoint, data);
+  return fetchApi.put(endpoint, data);
 }

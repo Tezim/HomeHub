@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import PageHeader from "../components/PageHeader";
 import RoomSettings from "../components/RoomSettings";
 import AppliancesSettings from "../components/AppliancesSettings";
+import { useNavigate } from "react-router-dom";
+import CustomLoading from "../components/custom/CustomLoading";
+import { isAuthenticated } from "../components/helpers/Helpers";
 
 const dummyRooms = [
   {
@@ -45,19 +48,29 @@ const appliances = [
 const HomePage = () => {
   const [rooms, setRooms] = useState([]);
   const [isSelected, setIsSelected] = useState("");
+  const [loading, setLoading] = useState(false);
+  const history = useNavigate();
+  const autheticated = isAuthenticated();
 
   useEffect(() => {
     setIsSelected(rooms[0]?.name);
   }, [rooms]);
 
   useEffect(() => {
+    setLoading(true);
+    if (!autheticated) history("/");
     setRooms(dummyRooms);
+    setLoading(false);
   }, []);
+
+  if (loading) {
+    return <CustomLoading />;
+  }
 
   return (
     <div
       style={{
-        display: "flex",
+        display: autheticated ? "flex" : "none",
         flexDirection: "column",
         flexGrow: 1,
         backgroundColor: "#1f1f1f",
