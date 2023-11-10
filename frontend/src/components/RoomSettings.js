@@ -1,8 +1,8 @@
 import InfoBubble from "./InfoBubble";
 
-const RoomSettings = ({ room, visible }) => {
+const RoomSettings = ({ categories }) => {
   return (
-    <div hidden={visible}>
+    <div>
       <div
         style={{
           display: "flex",
@@ -11,14 +11,9 @@ const RoomSettings = ({ room, visible }) => {
           margin: "15px 10px 15px 10px",
         }}
       >
-        <InfoBubble text={"Current Wattage"} info={room.wattage} />
-        <InfoBubble
-          text={"Statistics"}
-          img={{ src: "/bar-chart.png", alt: "statistics" }}
-        />
-        <InfoBubble text={"Lights"} slider={room.lights} />
-        <InfoBubble text={"Blinds"} slider={room.blinds} />
-        <InfoBubble text={"Temperature"} temperature={room.temperature} />
+        {categories.map((c, i) => {
+          return <InfoBubble key={i} text={c.name} />;
+        })}
       </div>
     </div>
   );

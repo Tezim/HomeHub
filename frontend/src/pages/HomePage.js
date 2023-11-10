@@ -6,68 +6,64 @@ import { useNavigate } from "react-router-dom";
 import CustomLoading from "../components/custom/CustomLoading";
 import { isAuthenticated } from "../components/helpers/Helpers";
 import { getRoomsFromDb } from "../services/RoomsService";
-
-const dummyRooms = [
-  {
-    name: "Living Room",
-    wattage: "40",
-    lights: true,
-    blinds: false,
-    temperature: "21",
-  },
-  {
-    name: "Kitchen",
-    wattage: "92",
-    lights: true,
-    blinds: true,
-    temperature: "23",
-  },
-  {
-    name: "Garage",
-    wattage: "4",
-    lights: false,
-    blinds: false,
-    temperature: "19",
-  },
-];
-
-const appliances = [
-  {
-    name: "Air condition",
-    state: true,
-  },
-  {
-    name: "Office Lights",
-    state: true,
-  },
-  {
-    name: "Vacuum",
-    state: false,
-  },
-];
+import {
+  getDevicesForRoom,
+  getDevicesFromDb,
+} from "../services/DevicesService";
+import { getCategoriesFromDb } from "../services/CategoriesService";
 
 const HomePage = () => {
   const [rooms, setRooms] = useState([]);
-  const [isSelected, setIsSelected] = useState("");
+  const [devices, setDevices] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState();
   const [loading, setLoading] = useState(false);
   const history = useNavigate();
   const authenticated = isAuthenticated();
 
   const getRooms = () => {
-    getRoomsFromDb().then((response) => {
-      setRooms(response.data);
+    getRoomsFromDb()
+      .then((response) => {
+        setRooms(response.data);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const getCategories = () => {
+    getCategoriesFromDb().then((response) => {
+      setCategories(response.data);
     });
   };
 
+  const getDevices = () => {
+    getDevicesFromDb()
+      .then((response) => {
+        setDevices(response.data);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const getDevicesRoom = () => {
+    getDevicesForRoom(selectedRoom?.room_id)
+      .then((response) => setDevices(response.data))
+      .catch((error) => console.log(error));
+  };
+
   useEffect(() => {
-    setIsSelected(rooms[0]?.name);
+    setSelectedRoom(rooms[0]);
   }, [rooms]);
 
   useEffect(() => {
-    setLoading(true);
+    getDevicesRoom();
+  }, [selectedRoom]);
+
+  useEffect(() => {
     if (!authenticated) history("/");
-    getRooms();
-    setLoading(false);
+    let promises = [];
+    promises.push(getRooms());
+    promises.push(getCategories());
+    setLoading(true);
+    Promise.all(promises).then(() => setLoading(false));
   }, [authenticated, history]);
 
   if (loading) {
@@ -107,11 +103,13 @@ const HomePage = () => {
                 style={{
                   cursor: "pointer",
                   marginRight: "20px",
-                  color: isSelected === r.name ? "white" : "#858483",
+                  color: selectedRoom?.name === r.name ? "white" : "#858483",
                   borderBottom:
-                    isSelected === r.name ? "1px solid orange" : "inherit",
+                    selectedRoom?.name === r.name
+                      ? "1px solid orange"
+                      : "inherit",
                 }}
-                onClick={() => setIsSelected(r.name)}
+                onClick={() => setSelectedRoom(r)}
                 key={i}
               >
                 {r.name}
@@ -147,13 +145,9 @@ const HomePage = () => {
           </div>
         </button>
       </div>
-      {rooms.map((r, i) => {
-        return (
-          <RoomSettings key={i} visible={isSelected !== r.name} room={r} />
-        );
-      })}
+      <RoomSettings categories={categories} />
       <PageHeader headerText={"Quick use"} />
-      <AppliancesSettings appliances={appliances} />
+      <AppliancesSettings appliances={devices} />
     </div>
   );
 };
