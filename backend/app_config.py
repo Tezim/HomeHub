@@ -17,6 +17,11 @@ login.init_app(app)
 app.secret_key = 'U1a2C&5f#kfu#8kU8W5A'
 app.permanent_session_lifetime = timedelta(minutes=30)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:asos@localhost/homehub'
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_COOKIE_SECURE'] = False
+app.config['SESSION_COOKIE_HTTPONLY'] = True 
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 db = SQLAlchemy(app)
 tiny_db = tinydb.TinyDB(paths.TINY_DB)
 
