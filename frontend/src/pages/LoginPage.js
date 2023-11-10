@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { loginUser } from "../components/services/UserService";
+import { loginUser } from "../services/UserService";
 import { useNavigate } from "react-router-dom";
 import CustomInput from "../components/custom/CustomInput";
 import CustomButton from "../components/custom/CustomButton";

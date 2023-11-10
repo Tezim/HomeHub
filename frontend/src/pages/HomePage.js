@@ -5,6 +5,7 @@ import AppliancesSettings from "../components/AppliancesSettings";
 import { useNavigate } from "react-router-dom";
 import CustomLoading from "../components/custom/CustomLoading";
 import { isAuthenticated } from "../components/helpers/Helpers";
+import { getRoomsFromDb } from "../services/RoomsService";
 
 const dummyRooms = [
   {
@@ -52,6 +53,12 @@ const HomePage = () => {
   const history = useNavigate();
   const authenticated = isAuthenticated();
 
+  const getRooms = () => {
+    getRoomsFromDb().then((response) => {
+      setRooms(response.data);
+    });
+  };
+
   useEffect(() => {
     setIsSelected(rooms[0]?.name);
   }, [rooms]);
@@ -59,7 +66,7 @@ const HomePage = () => {
   useEffect(() => {
     setLoading(true);
     if (!authenticated) history("/");
-    setRooms(dummyRooms);
+    getRooms();
     setLoading(false);
   }, [authenticated, history]);
 

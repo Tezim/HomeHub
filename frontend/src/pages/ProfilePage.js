@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import CustomButton from "../components/custom/CustomButton";
-import { logoutUser } from "../components/services/UserService";
+import { logoutUser } from "../services/UserService";
 import { isAuthenticated } from "../components/helpers/Helpers";
 import { useEffect } from "react";
 
