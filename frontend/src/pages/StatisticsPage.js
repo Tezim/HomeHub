@@ -8,7 +8,7 @@ const StatisticsPage = () => {
 
   useEffect(() => {
     if (!authenticated) history("/");
-  }, []);
+  }, [authenticated, history]);
 
   return (
     <div style={{ display: authenticated ? "flex" : "none" }}>

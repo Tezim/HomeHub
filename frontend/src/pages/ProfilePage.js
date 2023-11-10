@@ -10,7 +10,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (!authenticated) history("/");
-  }, []);
+  }, [authenticated, history]);
 
   const logout = async () => {
     logoutUser()

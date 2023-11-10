@@ -63,7 +63,7 @@ const DevicesPage = () => {
 
   useEffect(() => {
     if (!authenticated) history("/");
-  }, []);
+  }, [authenticated, history]);
 
   return (
     <div

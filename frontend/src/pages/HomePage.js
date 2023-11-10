@@ -50,7 +50,7 @@ const HomePage = () => {
   const [isSelected, setIsSelected] = useState("");
   const [loading, setLoading] = useState(false);
   const history = useNavigate();
-  const autheticated = isAuthenticated();
+  const authenticated = isAuthenticated();
 
   useEffect(() => {
     setIsSelected(rooms[0]?.name);
@@ -58,10 +58,10 @@ const HomePage = () => {
 
   useEffect(() => {
     setLoading(true);
-    if (!autheticated) history("/");
+    if (!authenticated) history("/");
     setRooms(dummyRooms);
     setLoading(false);
-  }, []);
+  }, [authenticated, history]);
 
   if (loading) {
     return <CustomLoading />;
@@ -70,7 +70,7 @@ const HomePage = () => {
   return (
     <div
       style={{
-        display: autheticated ? "flex" : "none",
+        display: authenticated ? "flex" : "none",
         flexDirection: "column",
         flexGrow: 1,
         backgroundColor: "#1f1f1f",
