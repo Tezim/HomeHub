@@ -1,50 +1,71 @@
-import { useState } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import { loginUser } from "../components/services/UserService";
+import { useNavigate } from "react-router-dom";
+import CustomInput from "../components/custom/CustomInput";
+import CustomButton from "../components/custom/CustomButton";
 
 const LoginPage = () => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const history = useNavigate();
 
-  async function login() {
+  const login = async () => {
     const formData = new FormData();
     formData.append("username", userName);
     formData.append("password", password);
-    axios
-      .post("http://127.0.0.1:5000/login", formData)
+    loginUser(formData)
       .then((response) => {
-        console.log(response);
+        sessionStorage.setItem("autheticated", response.data.user.email);
       })
-      .then((error) => {
-        console.log(error);
-      });
-  }
+      .then(() => history("/home"));
+  };
+
+  useEffect(() => {
+    sessionStorage.removeItem("autheticated");
+  }, []);
 
   return (
     <div>
       <form
         style={{
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           height: "80vh",
         }}
       >
-        <label>Username:</label>
-        <input
-          id={"username"}
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
-        />
-        <label>Password:</label>
-        <input
-          id={"password"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type={"button"} onClick={login}>
-          Submit
-        </button>
+        <div
+          style={{
+            backgroundColor: "#1f1f1f",
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "column",
+            borderRadius: "10px",
+            height: "25rem",
+            width: "30rem",
+            justifyContent: "space-evenly",
+          }}
+        >
+          <div style={{ fontSize: "35px", marginBottom: "10px" }}>Login</div>
+          <CustomInput
+            inputText={"Email:"}
+            inputType={"text"}
+            value={userName}
+            setValue={(e) => setUserName(e)}
+          />
+          <CustomInput
+            inputText={"Password:"}
+            inputType={"password"}
+            value={password}
+            setValue={(e) => setPassword(e)}
+          />
+          <div style={{}} />
+          <CustomButton
+            buttonText={"Login"}
+            buttonType={"button"}
+            onClick={() => login()}
+          />
+        </div>
       </form>
     </div>
   );
