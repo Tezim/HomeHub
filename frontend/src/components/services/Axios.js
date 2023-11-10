@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const fetchApi = axios.create({
-  baseURL: `${document.getElementById("root").baseURI}/`,
+  baseURL: process.env.REACT_APP_FLASK_URL,
 });
 
 export default fetchApi;
