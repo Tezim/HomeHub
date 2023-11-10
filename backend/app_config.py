@@ -2,6 +2,7 @@ from datetime import timedelta
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 import ssl
 import tinydb
 
@@ -9,6 +10,7 @@ import paths
 
 PEPPER = "bullshit"
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 login = LoginManager(app)
 login.session_protection = 'strong'
 login.init_app(app)
