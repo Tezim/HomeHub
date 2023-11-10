@@ -5,62 +5,65 @@ import AppliancesSettings from "../components/AppliancesSettings";
 import { useNavigate } from "react-router-dom";
 import CustomLoading from "../components/custom/CustomLoading";
 import { isAuthenticated } from "../components/helpers/Helpers";
-
-const dummyRooms = [
-  {
-    name: "Living Room",
-    wattage: "40",
-    lights: true,
-    blinds: false,
-    temperature: "21",
-  },
-  {
-    name: "Kitchen",
-    wattage: "92",
-    lights: true,
-    blinds: true,
-    temperature: "23",
-  },
-  {
-    name: "Garage",
-    wattage: "4",
-    lights: false,
-    blinds: false,
-    temperature: "19",
-  },
-];
-
-const appliances = [
-  {
-    name: "Air condition",
-    state: true,
-  },
-  {
-    name: "Office Lights",
-    state: true,
-  },
-  {
-    name: "Vacuum",
-    state: false,
-  },
-];
+import { getRoomsFromDb } from "../services/RoomsService";
+import {
+  getDevicesForRoom,
+  getDevicesFromDb,
+} from "../services/DevicesService";
+import { getCategoriesFromDb } from "../services/CategoriesService";
 
 const HomePage = () => {
   const [rooms, setRooms] = useState([]);
-  const [isSelected, setIsSelected] = useState("");
+  const [devices, setDevices] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState();
   const [loading, setLoading] = useState(false);
   const history = useNavigate();
   const authenticated = isAuthenticated();
 
+  const getRooms = () => {
+    getRoomsFromDb()
+      .then((response) => {
+        setRooms(response.data);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const getCategories = () => {
+    getCategoriesFromDb().then((response) => {
+      setCategories(response.data);
+    });
+  };
+
+  const getDevices = () => {
+    getDevicesFromDb()
+      .then((response) => {
+        setDevices(response.data);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const getDevicesRoom = () => {
+    getDevicesForRoom(selectedRoom?.room_id)
+      .then((response) => setDevices(response.data))
+      .catch((error) => console.log(error));
+  };
+
   useEffect(() => {
-    setIsSelected(rooms[0]?.name);
+    setSelectedRoom(rooms[0]);
   }, [rooms]);
 
   useEffect(() => {
-    setLoading(true);
+    getDevicesRoom();
+  }, [selectedRoom]);
+
+  useEffect(() => {
     if (!authenticated) history("/");
-    setRooms(dummyRooms);
-    setLoading(false);
+    let promises = [];
+    promises.push(getRooms());
+    promises.push(getCategories());
+    setLoading(true);
+    Promise.all(promises).then(() => setLoading(false));
   }, [authenticated, history]);
 
   if (loading) {
@@ -70,83 +73,90 @@ const HomePage = () => {
   return (
     <div
       style={{
-        display: authenticated ? "flex" : "none",
-        flexDirection: "column",
-        flexGrow: 1,
-        backgroundColor: "#1f1f1f",
-        borderRadius: "15px",
-        padding: "5px",
-        margin: "10px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
-      <PageHeader
-        headerText={"Summary"}
-        button={{
-          event: () => console.log("Home Page"),
-          text: "Add device",
-        }}
-      />
       <div
         style={{
-          display: "flex",
-          margin: "5px 0px 0px 10px",
-          justifyContent: "space-between",
+          display: authenticated ? "flex" : "none",
+          flexDirection: "column",
+          flexGrow: 1,
+          backgroundColor: "#1f1f1f",
+          borderRadius: "15px",
+          padding: "5px",
+          margin: "10px",
+          maxWidth: "75vw",
         }}
       >
-        <div style={{ display: "flex" }}>
-          {rooms.map((r, i) => {
-            return (
-              <div
-                style={{
-                  cursor: "pointer",
-                  marginRight: "20px",
-                  color: isSelected === r.name ? "white" : "#858483",
-                  borderBottom:
-                    isSelected === r.name ? "1px solid orange" : "inherit",
-                }}
-                onClick={() => setIsSelected(r.name)}
-                key={i}
-              >
-                {r.name}
-              </div>
-            );
-          })}
-        </div>
-        <button
+        <PageHeader
+          headerText={"Summary"}
+          button={{
+            event: () => console.log("Home Page"),
+            text: "Add device",
+          }}
+        />
+        <div
           style={{
-            borderRadius: "10px",
-            border: "none",
-            backgroundColor: "orange",
-            fontFamily: "inherit",
-            fontSize: "15px",
-            padding: "3px 8px 3px 8px",
-            marginRight: "10px",
-            cursor: "pointer",
+            display: "flex",
+            margin: "5px 0px 0px 10px",
+            justifyContent: "space-between",
           }}
         >
-          <div
+          <div style={{ display: "flex" }}>
+            {rooms.map((r, i) => {
+              return (
+                <div
+                  style={{
+                    cursor: "pointer",
+                    marginRight: "20px",
+                    color: selectedRoom?.name === r.name ? "white" : "#858483",
+                    borderBottom:
+                      selectedRoom?.name === r.name
+                        ? "1px solid orange"
+                        : "inherit",
+                  }}
+                  onClick={() => setSelectedRoom(r)}
+                  key={i}
+                >
+                  {r.name}
+                </div>
+              );
+            })}
+          </div>
+          <button
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              borderRadius: "10px",
+              border: "none",
+              backgroundColor: "orange",
+              fontFamily: "inherit",
+              fontSize: "15px",
+              padding: "3px 8px 3px 8px",
+              marginRight: "10px",
+              cursor: "pointer",
             }}
           >
-            Customize
-            <img
-              src={"/equalizer.png"}
-              style={{ width: "20px", height: "20px", marginLeft: "10px" }}
-              alt={"customize"}
-            />
-          </div>
-        </button>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              Customize
+              <img
+                src={"/equalizer.png"}
+                style={{ width: "20px", height: "20px", marginLeft: "10px" }}
+                alt={"customize"}
+              />
+            </div>
+          </button>
+        </div>
+        <RoomSettings categories={categories} />
+        <PageHeader headerText={"Quick use"} />
+        <AppliancesSettings appliances={devices} />
       </div>
-      {rooms.map((r, i) => {
-        return (
-          <RoomSettings key={i} visible={isSelected !== r.name} room={r} />
-        );
-      })}
-      <PageHeader headerText={"Quick use"} />
-      <AppliancesSettings appliances={appliances} />
     </div>
   );
 };

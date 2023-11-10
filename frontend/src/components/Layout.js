@@ -1,4 +1,4 @@
-import NavBar from "./TopBar/TopBar";
+import TopBar from "./TopBar/TopBar";
 
 const Layout = (props) => {
   return (
@@ -10,7 +10,7 @@ const Layout = (props) => {
         minHeight: "100vh",
       }}
     >
-      <NavBar />
+      <TopBar />
       <div style={{ flex: 1, width: "100%", padding: "10px" }}>
         {props.children}
       </div>

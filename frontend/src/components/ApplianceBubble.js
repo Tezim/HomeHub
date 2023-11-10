@@ -2,7 +2,7 @@ import { useState } from "react";
 import CustomSlider from "./custom/CustomSlider";
 
 const ApplianceBubble = ({ appliance }) => {
-  const [isOn, setIsOn] = useState(appliance.state);
+  const [isOn, setIsOn] = useState(appliance.status);
   return (
     <div
       style={{
@@ -31,7 +31,7 @@ const ApplianceBubble = ({ appliance }) => {
             {appliance.name}
           </div>
           <div style={{ fontSize: "15px", color: "#858483" }}>
-            {appliance.state ? "Connected" : "Disconnected"}
+            {appliance.status ? "Connected" : "Disconnected"}
           </div>
         </div>
         <CustomSlider toggle={isOn} onChange={() => setIsOn(!isOn)} />
