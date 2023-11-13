@@ -19,6 +19,7 @@ const CustomSlider = ({ toggle, onChange }) => {
         backgroundColor: toggle ? "#d98d02" : "gray",
         position: "relative",
         transition: "background-color 0.25s ease-in-out",
+        zIndex: "1",
       }}
       onClick={toggleButton}
     >

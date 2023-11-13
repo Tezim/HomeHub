@@ -1,4 +1,4 @@
-const CustomButton = ({ buttonText, buttonType, onClick }) => {
+const CustomButton = ({ buttonText, buttonType, onClick, disabled }) => {
   return (
     <button
       type={buttonType}
@@ -14,6 +14,7 @@ const CustomButton = ({ buttonText, buttonType, onClick }) => {
         width: "10rem",
         cursor: "pointer",
       }}
+      disabled={disabled}
     >
       {buttonText}
     </button>

@@ -51,12 +51,14 @@ const LoginPage = () => {
           <CustomInput
             inputText={"Email:"}
             inputType={"text"}
+            inputWidth={"23rem"}
             value={userName}
             setValue={(e) => setUserName(e)}
           />
           <CustomInput
             inputText={"Password:"}
             inputType={"password"}
+            inputWidth={"23rem"}
             value={password}
             setValue={(e) => setPassword(e)}
           />

@@ -5,12 +5,13 @@ import AppliancesSettings from "../components/AppliancesSettings";
 import { useNavigate } from "react-router-dom";
 import CustomLoading from "../components/custom/CustomLoading";
 import { isAuthenticated } from "../components/helpers/Helpers";
-import { getRoomsFromDb } from "../services/RoomsService";
+import { addRoomToDb, getRoomsFromDb } from "../services/RoomsService";
 import {
   getDevicesForRoom,
   getDevicesFromDb,
 } from "../services/DevicesService";
 import { getCategoriesFromDb } from "../services/CategoriesService";
+import AddRoomModal from "../components/modals/AddRoomModal";
 
 const HomePage = () => {
   const [rooms, setRooms] = useState([]);
@@ -18,6 +19,7 @@ const HomePage = () => {
   const [categories, setCategories] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState();
   const [loading, setLoading] = useState(false);
+  const [showAddRoomModal, setAddRoomModal] = useState(false);
   const history = useNavigate();
   const authenticated = isAuthenticated();
 
@@ -49,6 +51,14 @@ const HomePage = () => {
       .catch((error) => console.log(error));
   };
 
+  const addRoom = (room) => {
+    setLoading(true);
+    addRoomToDb(room)
+      .then(getRooms)
+      .catch((error) => console.log(error))
+      .finally(() => setLoading(false));
+  };
+
   useEffect(() => {
     setSelectedRoom(rooms[0]);
   }, [rooms]);
@@ -78,6 +88,11 @@ const HomePage = () => {
         justifyContent: "center",
       }}
     >
+      <AddRoomModal
+        show={showAddRoomModal}
+        onClose={() => setAddRoomModal(false)}
+        onSubmit={(room) => addRoom(room)}
+      />
       <div
         style={{
           display: authenticated ? "flex" : "none",
@@ -93,8 +108,8 @@ const HomePage = () => {
         <PageHeader
           headerText={"Summary"}
           button={{
-            event: () => console.log("Home Page"),
-            text: "Add device",
+            event: () => setAddRoomModal(true),
+            text: "Add room",
           }}
         />
         <div
