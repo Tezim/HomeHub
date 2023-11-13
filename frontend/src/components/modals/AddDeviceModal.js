@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import CustomButton from "../custom/CustomButton";
 import CustomDropdown from "../custom/CustomDropdown";
 import CustomInput from "../custom/CustomInput";
@@ -11,12 +11,12 @@ const AddDeviceModal = ({
   onSubmit,
   selectedRoom,
 }) => {
-  const [name, setName] = useState();
-  const [room, setRoom] = useState();
-  const [ipAddress, setIpAddress] = useState();
-  const [macAddress, setMacAddress] = useState();
-  const [info, setInfo] = useState();
-  const [category, setCategory] = useState();
+  const [name, setName] = useState("");
+  const [room, setRoom] = useState(null);
+  const [ipAddress, setIpAddress] = useState("");
+  const [macAddress, setMacAddress] = useState("");
+  const [info, setInfo] = useState("");
+  const [category, setCategory] = useState(null);
 
   const createRoomObject = () => {
     const formData = new FormData();

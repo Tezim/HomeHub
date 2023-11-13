@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import PageHeader from "../components/PageHeader";
 import RoomSettings from "../components/RoomSettings";
 import AppliancesSettings from "../components/AppliancesSettings";
@@ -6,11 +6,7 @@ import { useNavigate } from "react-router-dom";
 import CustomLoading from "../components/custom/CustomLoading";
 import { isAuthenticated } from "../components/helpers/Helpers";
 import { addRoomToDb, getRoomsFromDb } from "../services/RoomsService";
-import {
-  addDeviceToDb,
-  getDevicesForRoom,
-  getDevicesFromDb,
-} from "../services/DevicesService";
+import { addDeviceToDb, getDevicesForRoom } from "../services/DevicesService";
 import { getCategoriesFromDb } from "../services/CategoriesService";
 import AddRoomModal from "../components/modals/AddRoomModal";
 import AddDeviceModal from "../components/modals/AddDeviceModal";
@@ -40,19 +36,11 @@ const HomePage = () => {
     });
   };
 
-  const getDevices = () => {
-    getDevicesFromDb()
-      .then((response) => {
-        setDevices(response.data);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const getDevicesRoom = () => {
+  const getDevicesRoom = useCallback(() => {
     getDevicesForRoom(selectedRoom?.room_id)
       .then((response) => setDevices(response.data))
       .catch((error) => console.log(error));
-  };
+  }, [selectedRoom?.room_id]);
 
   const addRoom = (room) => {
     setLoading(true);
@@ -76,7 +64,7 @@ const HomePage = () => {
 
   useEffect(() => {
     getDevicesRoom();
-  }, [selectedRoom]);
+  }, [selectedRoom, getDevicesRoom]);
 
   useEffect(() => {
     if (!authenticated) {
