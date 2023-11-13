@@ -1,4 +1,4 @@
-const CustomInput = ({ inputText, inputType, value, setValue }) => {
+const CustomInput = ({ inputText, inputType, inputWidth, value, setValue }) => {
   return (
     <div
       style={{
@@ -14,7 +14,7 @@ const CustomInput = ({ inputText, inputType, value, setValue }) => {
         value={value}
         type={inputType}
         style={{
-          width: "18rem",
+          width: inputWidth,
           height: "4rem",
           borderRadius: "10px",
           paddingLeft: "5px",

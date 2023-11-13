@@ -1,16 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import PageHeader from "../components/PageHeader";
 import RoomSettings from "../components/RoomSettings";
 import AppliancesSettings from "../components/AppliancesSettings";
 import { useNavigate } from "react-router-dom";
 import CustomLoading from "../components/custom/CustomLoading";
 import { isAuthenticated } from "../components/helpers/Helpers";
-import { getRoomsFromDb } from "../services/RoomsService";
-import {
-  getDevicesForRoom,
-  getDevicesFromDb,
-} from "../services/DevicesService";
+import { addRoomToDb, getRoomsFromDb } from "../services/RoomsService";
+import { addDeviceToDb, getDevicesForRoom } from "../services/DevicesService";
 import { getCategoriesFromDb } from "../services/CategoriesService";
+import AddRoomModal from "../components/modals/AddRoomModal";
+import AddDeviceModal from "../components/modals/AddDeviceModal";
 
 const HomePage = () => {
   const [rooms, setRooms] = useState([]);
@@ -18,6 +17,8 @@ const HomePage = () => {
   const [categories, setCategories] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState();
   const [loading, setLoading] = useState(false);
+  const [showAddRoomModal, setAddRoomModal] = useState(false);
+  const [showAddDeviceModal, setShowAddDeviceModal] = useState(false);
   const history = useNavigate();
   const authenticated = isAuthenticated();
 
@@ -35,18 +36,26 @@ const HomePage = () => {
     });
   };
 
-  const getDevices = () => {
-    getDevicesFromDb()
-      .then((response) => {
-        setDevices(response.data);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const getDevicesRoom = () => {
+  const getDevicesRoom = useCallback(() => {
     getDevicesForRoom(selectedRoom?.room_id)
       .then((response) => setDevices(response.data))
       .catch((error) => console.log(error));
+  }, [selectedRoom?.room_id]);
+
+  const addRoom = (room) => {
+    setLoading(true);
+    addRoomToDb(room)
+      .then(getRooms)
+      .catch((error) => console.log(error))
+      .finally(() => setLoading(false));
+  };
+
+  const addDevice = (device) => {
+    setLoading(true);
+    addDeviceToDb(device)
+      .then(getDevicesRoom)
+      .catch((error) => console.log(error))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -55,15 +64,18 @@ const HomePage = () => {
 
   useEffect(() => {
     getDevicesRoom();
-  }, [selectedRoom]);
+  }, [selectedRoom, getDevicesRoom]);
 
   useEffect(() => {
-    if (!authenticated) history("/");
-    let promises = [];
-    promises.push(getRooms());
-    promises.push(getCategories());
-    setLoading(true);
-    Promise.all(promises).then(() => setLoading(false));
+    if (!authenticated) {
+      history("/");
+    } else {
+      let promises = [];
+      promises.push(getRooms());
+      promises.push(getCategories());
+      setLoading(true);
+      Promise.all(promises).then(() => setLoading(false));
+    }
   }, [authenticated, history]);
 
   if (loading) {
@@ -78,6 +90,19 @@ const HomePage = () => {
         justifyContent: "center",
       }}
     >
+      <AddRoomModal
+        show={showAddRoomModal}
+        onClose={() => setAddRoomModal(false)}
+        onSubmit={(room) => addRoom(room)}
+      />
+      <AddDeviceModal
+        show={showAddDeviceModal}
+        rooms={rooms}
+        categories={categories}
+        selectedRoom={selectedRoom}
+        onClose={() => setShowAddDeviceModal(false)}
+        onSubmit={(device) => addDevice(device)}
+      />
       <div
         style={{
           display: authenticated ? "flex" : "none",
@@ -93,8 +118,8 @@ const HomePage = () => {
         <PageHeader
           headerText={"Summary"}
           button={{
-            event: () => console.log("Home Page"),
-            text: "Add device",
+            event: () => setAddRoomModal(true),
+            text: "Add room",
           }}
         />
         <div
@@ -155,7 +180,10 @@ const HomePage = () => {
         </div>
         <RoomSettings categories={categories} />
         <PageHeader headerText={"Quick use"} />
-        <AppliancesSettings appliances={devices} />
+        <AppliancesSettings
+          appliances={devices}
+          onButtonClick={() => setShowAddDeviceModal(true)}
+        />
       </div>
     </div>
   );

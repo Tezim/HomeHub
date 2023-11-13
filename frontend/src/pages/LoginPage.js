@@ -3,7 +3,6 @@ import { loginUser } from "../services/UserService";
 import { useNavigate } from "react-router-dom";
 import CustomInput from "../components/custom/CustomInput";
 import CustomButton from "../components/custom/CustomButton";
-import CustomLoading from "../components/custom/CustomLoading";
 
 const LoginPage = () => {
   const [userName, setUserName] = useState("");
@@ -43,7 +42,7 @@ const LoginPage = () => {
             flexDirection: "column",
             borderRadius: "10px",
             height: "25rem",
-            width: "30rem",
+            width: "35vw",
             justifyContent: "space-evenly",
           }}
         >
@@ -51,12 +50,14 @@ const LoginPage = () => {
           <CustomInput
             inputText={"Email:"}
             inputType={"text"}
+            inputWidth={"25vw"}
             value={userName}
             setValue={(e) => setUserName(e)}
           />
           <CustomInput
             inputText={"Password:"}
             inputType={"password"}
+            inputWidth={"25vw"}
             value={password}
             setValue={(e) => setPassword(e)}
           />

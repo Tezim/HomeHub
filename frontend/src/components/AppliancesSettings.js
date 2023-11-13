@@ -1,6 +1,6 @@
 import ApplianceBubble from "./ApplianceBubble";
 
-const AppliancesSettings = ({ appliances, visible }) => {
+const AppliancesSettings = ({ appliances, visible, onButtonClick }) => {
   return (
     <div hidden={visible} style={{ overflow: "auto" }}>
       <div
@@ -34,6 +34,7 @@ const AppliancesSettings = ({ appliances, visible }) => {
             justifyContent: "center",
             cursor: "pointer",
           }}
+          onClick={onButtonClick}
         >
           <img
             style={{ widht: "25px", height: "25px" }}
