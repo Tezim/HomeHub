@@ -6,9 +6,6 @@ const AddRoomModal = ({ show, onClose, onSubmit }) => {
   const [name, setName] = useState("");
   const [story, setStory] = useState();
   const [size, setSize] = useState();
-  if (!show) {
-    return;
-  }
 
   const createRoomObject = () => {
     const formData = new FormData();
@@ -17,6 +14,8 @@ const AddRoomModal = ({ show, onClose, onSubmit }) => {
     formData.append("size", size);
     return formData;
   };
+
+  if (!show) return;
 
   return (
     <div
@@ -51,21 +50,21 @@ const AddRoomModal = ({ show, onClose, onSubmit }) => {
         <CustomInput
           inputText={"Room name"}
           inputType={"text"}
-          inputWidth={"30rem"}
+          inputWidth={"50vw"}
           value={name}
           setValue={(e) => setName(e)}
         />
         <CustomInput
           inputText={"Room size"}
           inputType={"number"}
-          inputWidth={"30rem"}
+          inputWidth={"50vw"}
           value={size}
           setValue={(e) => setSize(e)}
         />
         <CustomInput
           inputText={"Room story"}
           inputType={"number"}
-          inputWidth={"30rem"}
+          inputWidth={"50vw"}
           value={story}
           setValue={(e) => setStory(e)}
         />

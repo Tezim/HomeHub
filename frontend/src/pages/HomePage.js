@@ -7,11 +7,13 @@ import CustomLoading from "../components/custom/CustomLoading";
 import { isAuthenticated } from "../components/helpers/Helpers";
 import { addRoomToDb, getRoomsFromDb } from "../services/RoomsService";
 import {
+  addDeviceToDb,
   getDevicesForRoom,
   getDevicesFromDb,
 } from "../services/DevicesService";
 import { getCategoriesFromDb } from "../services/CategoriesService";
 import AddRoomModal from "../components/modals/AddRoomModal";
+import AddDeviceModal from "../components/modals/AddDeviceModal";
 
 const HomePage = () => {
   const [rooms, setRooms] = useState([]);
@@ -20,6 +22,7 @@ const HomePage = () => {
   const [selectedRoom, setSelectedRoom] = useState();
   const [loading, setLoading] = useState(false);
   const [showAddRoomModal, setAddRoomModal] = useState(false);
+  const [showAddDeviceModal, setShowAddDeviceModal] = useState(false);
   const history = useNavigate();
   const authenticated = isAuthenticated();
 
@@ -59,6 +62,14 @@ const HomePage = () => {
       .finally(() => setLoading(false));
   };
 
+  const addDevice = (device) => {
+    setLoading(true);
+    addDeviceToDb(device)
+      .then(getDevicesRoom)
+      .catch((error) => console.log(error))
+      .finally(() => setLoading(false));
+  };
+
   useEffect(() => {
     setSelectedRoom(rooms[0]);
   }, [rooms]);
@@ -68,12 +79,15 @@ const HomePage = () => {
   }, [selectedRoom]);
 
   useEffect(() => {
-    if (!authenticated) history("/");
-    let promises = [];
-    promises.push(getRooms());
-    promises.push(getCategories());
-    setLoading(true);
-    Promise.all(promises).then(() => setLoading(false));
+    if (!authenticated) {
+      history("/");
+    } else {
+      let promises = [];
+      promises.push(getRooms());
+      promises.push(getCategories());
+      setLoading(true);
+      Promise.all(promises).then(() => setLoading(false));
+    }
   }, [authenticated, history]);
 
   if (loading) {
@@ -92,6 +106,14 @@ const HomePage = () => {
         show={showAddRoomModal}
         onClose={() => setAddRoomModal(false)}
         onSubmit={(room) => addRoom(room)}
+      />
+      <AddDeviceModal
+        show={showAddDeviceModal}
+        rooms={rooms}
+        categories={categories}
+        selectedRoom={selectedRoom}
+        onClose={() => setShowAddDeviceModal(false)}
+        onSubmit={(device) => addDevice(device)}
       />
       <div
         style={{
@@ -170,7 +192,10 @@ const HomePage = () => {
         </div>
         <RoomSettings categories={categories} />
         <PageHeader headerText={"Quick use"} />
-        <AppliancesSettings appliances={devices} />
+        <AppliancesSettings
+          appliances={devices}
+          onButtonClick={() => setShowAddDeviceModal(true)}
+        />
       </div>
     </div>
   );

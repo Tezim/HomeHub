@@ -43,7 +43,7 @@ const LoginPage = () => {
             flexDirection: "column",
             borderRadius: "10px",
             height: "25rem",
-            width: "30rem",
+            width: "35vw",
             justifyContent: "space-evenly",
           }}
         >
@@ -51,14 +51,14 @@ const LoginPage = () => {
           <CustomInput
             inputText={"Email:"}
             inputType={"text"}
-            inputWidth={"23rem"}
+            inputWidth={"25vw"}
             value={userName}
             setValue={(e) => setUserName(e)}
           />
           <CustomInput
             inputText={"Password:"}
             inputType={"password"}
-            inputWidth={"23rem"}
+            inputWidth={"25vw"}
             value={password}
             setValue={(e) => setPassword(e)}
           />
