@@ -5,11 +5,17 @@ import AppliancesSettings from "../components/AppliancesSettings";
 import { useNavigate } from "react-router-dom";
 import CustomLoading from "../components/custom/CustomLoading";
 import { isAuthenticated } from "../components/helpers/Helpers";
-import { addRoomToDb, getRoomsFromDb } from "../services/RoomsService";
+import {
+  addRoomToDb,
+  deleteRoomFromDb,
+  getRoomsFromDb,
+  updateRoomDb,
+} from "../services/RoomsService";
 import { addDeviceToDb, getDevicesForRoom } from "../services/DevicesService";
 import { getCategoriesFromDb } from "../services/CategoriesService";
 import AddRoomModal from "../components/modals/AddRoomModal";
 import AddDeviceModal from "../components/modals/AddDeviceModal";
+import CustomizeRoomsModal from "../components/modals/CustomizeRoomsModal";
 
 const HomePage = () => {
   const [rooms, setRooms] = useState([]);
@@ -19,6 +25,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [showAddRoomModal, setAddRoomModal] = useState(false);
   const [showAddDeviceModal, setShowAddDeviceModal] = useState(false);
+  const [showCustomizeModal, setShowCustomizeModal] = useState(false);
   const history = useNavigate();
   const authenticated = isAuthenticated();
 
@@ -54,6 +61,22 @@ const HomePage = () => {
     setLoading(true);
     addDeviceToDb(device)
       .then(getDevicesRoom)
+      .catch((error) => console.log(error))
+      .finally(() => setLoading(false));
+  };
+
+  const updateRoom = (room) => {
+    setLoading(true);
+    updateRoomDb(room?.data, room?.id)
+      .then(getRooms)
+      .catch((error) => console.log(error))
+      .finally(() => setLoading(false));
+  };
+
+  const deleteRoom = (id) => {
+    setLoading(true);
+    deleteRoomFromDb(id)
+      .then(getRooms)
       .catch((error) => console.log(error))
       .finally(() => setLoading(false));
   };
@@ -102,6 +125,13 @@ const HomePage = () => {
         selectedRoom={selectedRoom}
         onClose={() => setShowAddDeviceModal(false)}
         onSubmit={(device) => addDevice(device)}
+      />
+      <CustomizeRoomsModal
+        show={showCustomizeModal}
+        rooms={rooms}
+        onClose={() => setShowCustomizeModal(false)}
+        onDelete={(id) => deleteRoom(id)}
+        onSubmit={(room) => updateRoom(room)}
       />
       <div
         style={{
@@ -161,6 +191,7 @@ const HomePage = () => {
               marginRight: "10px",
               cursor: "pointer",
             }}
+            onClick={() => setShowCustomizeModal(true)}
           >
             <div
               style={{

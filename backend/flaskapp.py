@@ -11,7 +11,7 @@ from backend.DTO.device_DTO import DeviceDTO
 from backend.DTO.goup_model import Group
 from backend.DTO.room_model import Room
 from backend.DTO.user_DTO import UserDTO
-from backend.app_config import app, db, login, tiny_db
+from backend.app_config import app, db, login
 from backend.DTO.user_model import User
 from backend.DTO.device_model import Device
 from threading import Thread, Event
@@ -108,27 +108,27 @@ def profile_gen():
                 return jsonify(response.to_json())
             except Exception as e:
                 print(e)
-                return Response("{'db_error':'progile_gen'}", status=404, mimetype='application/json')
+                return Response("{'db_error':'profile_genereal'}", status=500, mimetype='application/json')
     elif request.method == 'PUT':
-        username = request.form["username"].strip()
-        email = request.form["email"].strip()
-        phone = request.form["phone"].strip()
-        groups = request.form["groups"].strip()
-        photo = request.form["photo"].strip()
+        username = request.form.get('username')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        groups = request.form.get('groups')
+        photo = request.form.get('photo')
         u = User.query.filter_by(name=username).first()
         if u is not None:
             return Response("{'db_error':'Username already in use'}", status=403)
         user = load_user(current_user.user_id)
-        if email != "":
-            user.email = email
-        if phone != "":
-            user.phone = phone
-        if photo != "":
-            user.photo = photo
-        if groups != "":
-            user.groups = groups
-        if username != "":
-            user.name = username
+        if email is not None:
+            user.email = email.strip()
+        if phone is not None:
+            user.phone = phone.strip()
+        if photo is not None:
+            user.photo = photo.strip()
+        if groups is not None:
+            user.groups = groups.strip()
+        if username is not None:
+            user.name = username.strip()
         db.session.commit()
         return jsonify(UserDTO(user).to_json())
     return {}
@@ -156,17 +156,17 @@ def profile_sec():
                 return jsonify(response.to_json())
             except Exception as e:
                 print(e)
-                return Response("{'db_error':'progile_sec'}", status=404, mimetype='application/json')
+                return Response("{'db_error':'profile_sec'}", status=500, mimetype='application/json')
     elif request.method == 'PUT':
         try:
-            two_f = request.form["two_factor"].strip()
+            two_f = request.form.get('two_factor')
             u = load_user(current_user.user_id)
             if u is not None:
-                u.two_factor = eval(two_f)
+                u.two_factor = eval(two_f.strip())
             db.session.commit()
             return {}
         except Exception:
-            return Response("{'db_error': 'turn on 2F'}", status=400)
+            return Response("{'db_error': 'turn on 2F'}", status=500)
 
 
 @app.route("/profile/groups", methods=['GET', 'POST'])
@@ -185,10 +185,16 @@ def group_detail(group_id):
                 group = Group.query.get(group_id=group_id).first()
                 return jsonify(group.to_json())
             except Exception:
-                return Response("{'Db_error' : 'group_detail'}", status=400)
+                return Response("{'Db_error' : 'group_detail'}", status=500)
         return Response("{'unauthorized': True}", status=401, mimetype='application/json')
-    elif request.method == 'POST':
-        pass
+    elif request.method == 'PUT':
+        users = request.form.get('users')
+        try:
+            group = Group.query.get(group_id=group_id).first()
+            group.users = users
+            db.session.commit()
+        except Exception:
+            return Response("{'Db_error' : 'group_update'}", status=500)
     else:
         try:
             group = Group.query.get(group_id=group_id).first()
@@ -201,11 +207,13 @@ def group_detail(group_id):
 
 @app.route("/profile/groups/add", methods=['POST'])
 @login_required
-def add_group(group_data):
+def add_group():
     if current_user.is_authenticated:
         if current_user.is_admin == 1:
-            name = group_data['name']
-            users = group_data['users']
+            name = request.form.get('name')
+            users = request.form.get('users')
+            if name is None or users is None:
+                return Response("{'db_error':'groups_add'}", status=500)
             try:
                 g = Group.query.get(group_name=name).firt()
                 if g is not None:
@@ -216,7 +224,7 @@ def add_group(group_data):
                 g = Group.query.get(group_name=name).firt()
                 return jsonify(g.to_json())
             except Exception:
-                return Response("{'Db_error' : 'add_group'}", status=400)
+                return Response("{'Db_error' : 'add_group'}", status=500)
     return Response("{'unauthorized': True}", status=401, mimetype='application/json')
 
 
@@ -279,7 +287,7 @@ def devices_all():
             response.append(DeviceDTO(device).to_json())
         return jsonify(response)
     except Exception:
-        return Response("{'db_error':'device_all}", status=404)
+        return Response("{'db_error':'device_all}", status=500)
 
 
 @app.route("/devices/add", methods=['GET', 'POST'])
@@ -289,14 +297,14 @@ def devices_add():
         return {}
     else:
         new_dev = Device()
-        new_dev.name = request.form["name"].strip()
-        new_dev.room_id = request.form["room_id"].strip()
+        new_dev.name = request.form.get("name")
+        new_dev.room_id = request.form.get("room_id")
         # new_dev.status = request.form["status"].strip()
-        new_dev.ip_address = request.form["ip_address"].strip()
-        new_dev.mac_address = request.form["mac_address"].strip()
-        new_dev.more_info = request.form["more_info"].strip()
-        new_dev.category_id = request.form["category"].strip()
-        new_dev.usage = request.form["usage"].strip()
+        new_dev.ip_address = request.form.get("ip_address")
+        new_dev.mac_address = request.form.get("mac_address")
+        new_dev.more_info = request.form.get("more_info")
+        new_dev.category_id = request.form.get("category")
+        new_dev.usage = request.form.get("usage")
         new_dev.owner = current_user.user_id
         try:
             db.session.add(new_dev)
@@ -305,7 +313,7 @@ def devices_add():
                 else jsonify(DeviceDTO(new_dev).to_json_user())
         except Exception as e:
             print(e)
-            return Response("{'db_error':'device_add}", status=404)
+            return Response("{'db_error':'device_add}", status=500)
 
 
 def delete_device(id):
@@ -339,51 +347,50 @@ def devices_rooms(name, id):
                 return jsonify(DeviceDTO(device).to_json()) if current_user.is_admin \
                     else jsonify(DeviceDTO(device).to_json_user())
             except Exception:
-                return Response("{'db_error':'device does not exist'}", status=404)
+                return Response("{'db_error':'device does not exist'}", status=500)
         elif request.method == 'PUT':
             try:
                 device = Device.query.filter_by(device_id=id).first()
-                name = request.form['name'].strip()
-                if name != "":
-                    device.name = name
-                room_id = request.form['room_id'].strip()
-                if room_id != "":
-                    device.room_id = room_id
-                status = request.form['status'].strip()
-                if status != "":
-                    device.status = status
-                ip = request.form['ip_address'].strip()
-                if ip != "":
-                    device.ip_address = ip
-                mac = request.form['mac_address'].strip()
-                if mac != "":
-                    device.mac_address = mac
-                more = request.form['more_info'].strip()
-                if more != "":
-                    device.more_info = more
-                category = request.form['category'].strip()
-                if category != "":
-                    device.category_id = category
+                name = request.form.get('name')
+                if name is not None:
+                    device.name = name.strip()
+                room_id = request.form.get('room_id')
+                if room_id is not None:
+                    device.room_id = room_id.strip()
+                status = request.form.get('status')
+                if status is not None:
+                    device.status = status.strip()
+                ip = request.form.get('ip_address')
+                if ip is not None:
+                    device.ip_address = ip.strip()
+                mac = request.form.get('mac_address')
+                if mac is not None:
+                    device.mac_address = mac.strip()
+                more = request.form.get('more_info')
+                if more is not None:
+                    device.more_info = more.strip()
+                category = request.form.get('category')
+                if category is not None:
+                    device.category_id = category.strip()
                 try:
-                    db.session.add(device)
                     db.session.commit()
                     return jsonify(DeviceDTO(device).to_json()) if current_user.is_admin \
                         else jsonify(DeviceDTO(device).to_json_user())
                 except Exception:
-                    db.session.rollback()
-                    return Response("{'db_error':'device_update'}", status=404)
+                    ##db.session.rollback()
+                    return Response("{'db_error':'device_update'}", status=500)
             except Exception:
-                return Response("{'db_error':'device_update'}", status=404)
+                return Response("{'db_error':'device_update'}", status=500)
         else:
             status = delete_device(id)
             if status == 0:
                 return Response("{'status': 'success'}", status=200)
             else:
-                return Response("{'status': 'delete failure'}", status=200)
+                return Response("{'status': 'delete failure'}", status=500)
 
 
 @app.route("/devices/category/<name>", defaults={'id': None})
-@app.route("/devices/category/<name>/<id>", methods=['GET', 'PUT'])
+@app.route("/devices/category/<name>/<id>", methods=['GET', 'PUT', 'DELETE'])
 @login_required
 def devices_type(name, id):
     if id is None:
@@ -403,40 +410,45 @@ def devices_type(name, id):
                     else jsonify(DeviceDTO(device).to_json_user())
             except Exception:
                 return Response("{'db_error':'device does not exist'}", status=404)
-        else:
+        elif request.method == 'PUT':
             try:
                 device = Device.query.filter_by(device_id=id).first()
-                name = request.form['name'].strip()
-                if name != "":
+                name = request.form.get('name')
+                if name is not None:
                     device.name = name
-                room_id = request.form['room_id'].strip()
-                if room_id != "":
+                room_id = request.form.get('room_id')
+                if room_id is not None:
                     device.room_id = room_id
-                status = request.form['status'].strip()
-                if status != "":
+                status = request.form.get('status')
+                if status is not None:
                     device.status = status
-                ip = request.form['ip_address'].strip()
-                if ip != "":
+                ip = request.form.get('ip_address')
+                if ip is not None:
                     device.ip_address = ip
-                mac = request.form['mac_address'].strip()
-                if mac != "":
+                mac = request.form.get('mac_address')
+                if mac is not None:
                     device.mac_address = mac
-                more = request.form['more_info'].strip()
-                if more != "":
+                more = request.form.get('more_info')
+                if more is not None:
                     device.more_info = more
-                category = request.form['category'].strip()
-                if category != "":
+                category = request.form.get('category')
+                if category is not None:
                     device.category_id = category
                 try:
-                    db.session.add(device)
                     db.session.commit()
                     return jsonify(DeviceDTO(device).to_json()) if current_user.is_admin \
                         else jsonify(DeviceDTO(device).to_json_user())
                 except Exception:
-                    db.session.rollback()
-                    return Response("{'db_error':'device_update'}", status=404)
+                    ##db.session.rollback()
+                    return Response("{'db_error':'device_update'}", status=500)
             except Exception:
-                return Response("{'db_error':'device_update'}", status=404)
+                return Response("{'db_error':'device_update'}", status=500)
+        else:
+            status = delete_device(id)
+            if status == 0:
+                return Response("{'status': 'success'}", status=200)
+            else:
+                return Response("{'status': 'delete failure'}", status=500)
 
 
 # ______ room subset _______________________
@@ -450,34 +462,33 @@ def update_room(id):
             if room is not None:
                 return jsonify(RoomDTO(room).to_json())
         except Exception as e:
-            return Response("{'db_error':'room_get'}", status=404)
+            return Response("{'db_error':'room_get'}", status=500)
     elif request.method == 'PUT':
         try:
             room = Room.query.filter_by(room_id=id).first()
-            if room is not None:
-                name = request.form['name'].strip()
-                if name != "":
-                    room.name = name
-                size = request.form['size'].strip()
-                if name != "":
-                    room.size = size
-                story = request.form['story'].strip()
-                if name != "":
-                    story.story = story
-                devices = request.form['devices'].strip()
-                if devices != "":
-                    room.devices = devices
-                db.session.add(room)
+            if room is None:
+                return Response("Room not found", status=404)
+            else:
+                name = request.form.get('name')
+                if name is not None:
+                    room.name = name.strip()
+                size = request.form.get('size')
+                if size is not None:
+                    room.size = size.strip()
+                story = request.form.get('story')
+                if story is not None:
+                    room.story = story.strip()
                 db.session.commit()
                 return jsonify(RoomDTO(room).to_json())
         except Exception:
-            return Response("{'db_error':'room_update'}", status=404)
+            return Response("{'db_error':'room_update'}", status=500)
     else:
         try:
             room = Room.query.filter_by(room_id=id).first()
             if room is not None:
                 db.session.delete(room)
                 db.session.commit()
+                return "Deleted"
         except Exception as e:
             return Response("{'db_error':'room_delete'}", status=404)
 
@@ -498,7 +509,7 @@ def add_room():
         db.session.commit()
         return jsonify(new_room.to_json())
     except Exception:
-        return Response("{'db_error':'add_room'}", status=404)
+        return Response("{'db_error':'add_room'}", status=500)
 
 
 @app.route("/rooms")
@@ -511,10 +522,7 @@ def get_rooms():
             response.append(room.to_json())
         return jsonify(response)
     except Exception:
-        return Response("{'db_error': 'get_rooms'}", status=404)
-
-
-# * DELETE room
+        return Response("{'db_error': 'get_rooms'}", status=500)
 
 
 # ______________________category subset______________________
@@ -530,7 +538,7 @@ def add_cat():
         db.session.commit()
         return jsonify(new_category.to_json())
     except Exception:
-        return Response("{'db_error':'add_category'}", status=404)
+        return Response("{'db_error':'add_category'}", status=500)
 
 
 @app.route("/categories")
@@ -563,9 +571,6 @@ def get_categories_byID(id):
             return Response("{'status': 'success'}")
         except Exception:
             return {'db_error': 'delete_category_byID'}
-
-
-# * DELETE category
 
 # _________________________________________________________________________
 # _____________________________available devices ___________________________

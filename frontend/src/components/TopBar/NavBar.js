@@ -16,7 +16,7 @@ const NavBar = () => {
         alt={"homeButton"}
       />
       <NavBarIcon
-        imgSrc={"/setting.png"}
+        imgSrc={"/devices.png"}
         destination={"/devices"}
         alt={"devicesButton"}
       />
