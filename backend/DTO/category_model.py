@@ -1,3 +1,4 @@
+from backend.DTO.device_DTO import DeviceDTO
 from backend.app_config import db
 
 
@@ -12,5 +13,5 @@ class Category(db.Model):
         return {
             "category_id": self.category_id,
             "name": self.name,
-            "devices": list(self.devices)
+            "devices": [DeviceDTO(dev).to_json() for dev in self.devices]
         }
