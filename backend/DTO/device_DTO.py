@@ -11,6 +11,7 @@ class DeviceDTO():
     date_created = ""
     last_modified = ""
     owner = None
+    usage = 0
     more_info = {}
     category_id = ""
 
@@ -26,6 +27,7 @@ class DeviceDTO():
         self.date_created = device.date_created
         self.owner = device.owner
         self.category_id = device.category_id
+        self.usage = device.usage
 
 
     def to_json(self):
@@ -40,6 +42,7 @@ class DeviceDTO():
             "created": self.date_created,
             "modified": self.last_modified,
             "category": self.category_id,
+            "usage" : self.usage,
             "owner": self.owner
         }
 
@@ -54,5 +57,6 @@ class DeviceDTO():
             "add_info": self.more_info,
             "created": self.date_created,
             "category": self.category_id,
-            "modified": self.last_modified
+            "modified": self.last_modified,
+            "usage": self.usage
         }

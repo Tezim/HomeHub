@@ -15,9 +15,11 @@ class Device(db.Model):
     mac_address = db.Column(db.String(255))
     more_info = db.Column(db.String(255))
     category_id = db.Column(db.Integer, db.ForeignKey(Category.category_id))
+    usage = db.Column(db.Integer)
     date_created = db.Column(db.DateTime(timezone=True),default=datetime.datetime.now())
     date_modified = db.Column(db.DateTime(timezone=True),default=datetime.datetime.now(), onupdate=datetime.datetime.now())
     owner = db.Column(db.Integer)
+
 
 
 

@@ -138,7 +138,7 @@
 
       }
       ,
-      "post": {
+      "put": {
         "tags": ["Profile"],
         "description": "Handles update of profile info, parameters are required, if not provided function expects empty string",
         "parameters": [
@@ -243,7 +243,7 @@
           }
         }
       },
-      "post": {
+      "put": {
         "tags": ["Profile"],
         "description": "Update two factor",
         "parameters": [{
@@ -324,11 +324,80 @@
               "example": {
                       "ID": 2,
                       "Name": "Guests",
-                      "Users" : "1,2,3"
+                      "Users" : [1,2,3]
               }
             }
           },
           "400": {
+            "description": "Database error handle",
+            "schema": {
+              "example": {"Db_error" : "group_detail"}
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unauthorized": "true"}
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Profile"],
+        "description": "Update group info",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "formData",
+            "type": "string"
+          },
+          {
+            "name": "Users",
+            "required": true,
+            "in": "formData",
+            "type": "array",
+            "description": "array of integers"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                  "ID": 2,
+                  "Name": "Guests",
+                  "Users" : [1,2,3]
+              }
+            }
+          },
+          "400": {
+            "description": "Database error handle",
+            "schema": {
+              "example": {"Db_error" : "group_detail"}
+            }
+          },
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unauthorized": "true"}
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Profile"],
+        "description": "Delete group with given id",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                "status": "success"
+              }
+            }
+          },
+           "400": {
             "description": "Database error handle",
             "schema": {
               "example": {"Db_error" : "group_detail"}
@@ -451,7 +520,7 @@
         }
       }
     },
-  "/devices/all" : {
+    "/devices/all" : {
     "get": {
       "tags": ["Devices"],
       "description": "Returns set of all devices available",
@@ -700,7 +769,7 @@
           }
         }
       },
-      "post": {
+      "put": {
         "tags": ["Devices"],
         "description": "Update device inside detail, if value is not provided send an empty string",
         "parameters": [
@@ -776,6 +845,32 @@
             "description": "",
             "schema": {
               "example": {"db_error" :  "device_update"}
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Devices"],
+        "description": "Deletes device with specified id",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                "status" : "success"
+              }
+            }
+          },
+           "401": {
+            "description": "",
+            "schema": {
+              "example": {"unathorized": "true"}
+            }
+          },
+          "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error" :  "delete failure"}
             }
           }
         }
@@ -890,7 +985,7 @@
           }
         }
       },
-      "post": {
+      "put": {
         "tags": ["Devices"],
         "description": "Update device inside detail, if value is not provided send an empty string",
         "parameters": [
@@ -966,6 +1061,32 @@
             "description": "",
             "schema": {
               "example": {"db_error" :  "device_update"}
+            }
+          }
+        }
+      },
+        "delete": {
+        "tags": ["Devices"],
+        "description": "Deletes device with specified id",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                "status" : "success"
+              }
+            }
+          },
+           "401": {
+            "description": "",
+            "schema": {
+              "example": {"unathorized": "true"}
+            }
+          },
+          "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error" :  "delete failure"}
             }
           }
         }
@@ -1074,11 +1195,13 @@
               "example": [
                     {
                         "name": "Light",
-                        "category_id": 1
+                        "category_id": 1,
+                        "devices": [3,4]
                     },
                     {
                         "name": "Sockets",
-                        "category_id": 2
+                        "category_id": 2,
+                        "devices": [0,1,2]
                     }
                 ]
             }
@@ -1130,6 +1253,176 @@
             "description": "",
             "schema": {
               "example": {"db_error": "add_category"}
+            }
+          }
+        }
+      }
+    },
+    "/rooms/<id>":{
+      "get": {
+        "tags": ["Rooms"],
+        "description": "Returns room detail by specified id",
+        "responses": {
+          "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error": "rooms_get"}
+            }
+        },
+           "401": {
+            "description": "",
+            "schema": {
+              "example": {"unathorized":  "true"}
+            }
+      },
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                "room_id" : 0,
+                "name" : "kitchen",
+                "story" : 0,
+                "size" : 45,
+                "devices" : [0,1,6,7]
+              }
+            }
+          }
+          }
+        },
+      "put": {
+        "tags": ["Rooms"],
+        "description": "Update room data",
+        "parameters": [
+          {
+            "name": "Name",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "story",
+             "in": "formData",
+            "type": "integer",
+            "required": true
+          },
+          {
+            "name": "size",
+             "in": "formData",
+            "type": "integer",
+            "required": true
+          },
+          {
+            "name": "devices",
+             "in": "formData",
+            "type": "array",
+            "required": true
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error": "rooms_update"}
+            }
+            },
+           "401": {
+            "description": "",
+            "schema": {
+              "example": {"unathorized":  "true"}
+            }
+          },
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                 "room_id" : 0,
+                 "name" : "kitchen",
+                 "story" : 0,
+                 "size" : 45,
+                 "devices" : [0,1,6,7]
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete room with specified id",
+        "tags": ["Rooms"],
+        "responses": {
+           "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error": "rooms_delete"}
+            }
+            },
+           "401": {
+            "description": "",
+            "schema": {
+              "example": {"unathorized":  "true"}
+            }
+        },
+          "200": {
+          "description": "",
+            "schema": {
+              "example": {
+                "status": "success"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/<id>": {
+      "delete": {
+        "description": "Delete category with given id",
+        "tags": ["Categories"],
+        "responses": {
+          "401": {
+            "description": "",
+            "schema": {
+              "example": {"unauthorized": "true"}
+            }
+          },
+          "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error": "delete_category_byID"}
+            }
+          },
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                "status": "success"
+              }
+            }
+          }
+        }
+        },
+      "get": {
+        "tags": ["Categories"],
+        "description": "Get category by id",
+        "responses": {
+           "401": {
+            "description": "",
+            "schema": {
+              "example": {"unauthorized": "true"}
+            }
+          },
+          "404": {
+            "description": "",
+            "schema": {
+              "example": {"db_error": "delete_category_byID"}
+            }
+        },
+          "200": {
+            "description": "",
+            "schema": {
+              "example": {
+                   "name": "Sockets",
+                   "category_id": 2,
+                   "devices": [0,1,2]
+              }
             }
           }
         }
