@@ -26,6 +26,7 @@ const AddDeviceModal = ({
     formData.append("mac_address", macAddress);
     formData.append("more_info", info);
     formData.append("category", category.category_id);
+    formData.append("usage", 0);
     return formData;
   };
 

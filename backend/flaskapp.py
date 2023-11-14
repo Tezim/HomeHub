@@ -488,6 +488,7 @@ def update_room(id):
             if room is not None:
                 db.session.delete(room)
                 db.session.commit()
+                return "Deleted"
         except Exception as e:
             return Response("{'db_error':'room_delete'}", status=404)
 
