@@ -1,69 +1,34 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DevicesScroll from "../components/DevicesScroll";
 import PageHeader from "../components/PageHeader";
 import { useEffect } from "react";
 import { isAuthenticated } from "../components/helpers/Helpers";
-
-const appliances = [
-  {
-    name: "Air condition",
-    room: "Living Room",
-    state: true,
-  },
-  {
-    name: "Office Lights",
-    room: "Living Room",
-    state: true,
-  },
-  {
-    name: "Vacuum",
-    room: "Kitchen",
-    state: false,
-  },
-  {
-    name: "Vacuum1",
-    room: "Kitchen",
-    state: false,
-  },
-  {
-    name: "Vacuum2",
-    room: "Kitchen",
-    state: false,
-  },
-  {
-    name: "Vacuum3",
-    room: "Kitchen",
-    state: false,
-  },
-  {
-    name: "Vacuum4",
-    room: "Kitchen",
-    state: false,
-  },
-  {
-    name: "Vacuum5",
-    room: "Kitchen",
-    state: false,
-  },
-  {
-    name: "Vacuum6",
-    room: "Kitchen",
-    state: false,
-  },
-  {
-    name: "Vacuum7",
-    room: "Kitchen",
-    state: false,
-  },
-];
+import CustomLoading from "../components/custom/CustomLoading";
+import { getDevicesFromDb } from "../services/DevicesService";
 
 const DevicesPage = () => {
+  const [devices, setDevices] = useState([]);
+  const [loading, setLoading] = useState(false);
   const history = useNavigate();
   const authenticated = isAuthenticated();
 
+  const getDevices = () => {
+    setLoading(true);
+    getDevicesFromDb()
+      .then((response) => setDevices(response.data))
+      .catch((error) => console.log(error))
+      .finally(() => setLoading(false));
+  };
+
   useEffect(() => {
     if (!authenticated) history("/");
+    getDevices();
   }, [authenticated, history]);
+
+  if (loading) {
+    return <CustomLoading />;
+  }
 
   return (
     <div
@@ -85,8 +50,7 @@ const DevicesPage = () => {
         }}
       />
       <div style={{ display: "flex", flexDirection: "row", padding: "10px" }}>
-        <DevicesScroll appliances={appliances} />
-        <div>hello</div>
+        <DevicesScroll appliances={devices} />
       </div>
     </div>
   );

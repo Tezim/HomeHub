@@ -15,7 +15,7 @@ const DevicesScroll = ({ appliances }) => {
         maxHeight: "60vh",
       }}
     >
-      {appliances.map((a) => {
+      {appliances?.map((a) => {
         return (
           <div
             style={{
