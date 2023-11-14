@@ -11,7 +11,7 @@ from backend.DTO.device_DTO import DeviceDTO
 from backend.DTO.goup_model import Group
 from backend.DTO.room_model import Room
 from backend.DTO.user_DTO import UserDTO
-from backend.app_config import app, db, login, tiny_db
+from backend.app_config import app, db, login
 from backend.DTO.user_model import User
 from backend.DTO.device_model import Device
 from threading import Thread, Event
@@ -454,24 +454,22 @@ def update_room(id):
     elif request.method == 'PUT':
         try:
             room = Room.query.filter_by(room_id=id).first()
-            if room is not None:
-                name = request.form['name'].strip()
-                if name != "":
-                    room.name = name
-                size = request.form['size'].strip()
-                if name != "":
-                    room.size = size
-                story = request.form['story'].strip()
-                if name != "":
-                    story.story = story
-                devices = request.form['devices'].strip()
-                if devices != "":
-                    room.devices = devices
-                db.session.add(room)
+            if room is None:
+                return Response("Room not found", status=404)
+            else:
+                name = request.form.get('name')
+                if name is not None:
+                    room.name = name.strip()
+                size = request.form.get('size')
+                if size is not None:
+                    room.size = size.strip()
+                story = request.form.get('story')
+                if story is not None:
+                    room.story = story.strip()
                 db.session.commit()
                 return jsonify(RoomDTO(room).to_json())
         except Exception:
-            return Response("{'db_error':'room_update'}", status=404)
+            return Response("{'db_error':'room_update'}", status=500)
     else:
         try:
             room = Room.query.filter_by(room_id=id).first()
