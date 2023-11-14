@@ -11,5 +11,6 @@ class Category(db.Model):
     def to_json(self):
         return {
             "category_id": self.category_id,
-            "name": self.name
+            "name": self.name,
+            "devices": list(self.devices)
         }

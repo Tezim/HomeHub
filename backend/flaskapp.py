@@ -4,6 +4,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 
 import paths
 from backend import helpers
+from backend.DTO.RoomDTO import RoomDTO
 from backend.DTO.base_response_model import BaseResponse
 from backend.DTO.category_model import Category
 from backend.DTO.device_DTO import DeviceDTO
@@ -72,10 +73,7 @@ def login():
                     response.description = "Wrong Credentials"
                     return jsonify(response.to_json())
             else:
-                response = BaseResponse()
-                response.status = "Failure"
-                response.description = "User does not exist"
-                return jsonify(response.to_json())
+                return {"error": "failed to login"}
         except Exception as e:
             print(e)
             return {}
@@ -99,7 +97,7 @@ def profile():
     return redirect('profile/general')
 
 
-@app.route("/profile/general", methods=['GET', 'POST'])
+@app.route("/profile/general", methods=['GET', 'PUT'])
 @login_required
 def profile_gen():
     if request.method == 'GET':
@@ -111,7 +109,7 @@ def profile_gen():
             except Exception as e:
                 print(e)
                 return Response("{'db_error':'progile_gen'}", status=404, mimetype='application/json')
-    elif request.method == 'POST':
+    elif request.method == 'PUT':
         username = request.form["username"].strip()
         email = request.form["email"].strip()
         phone = request.form["phone"].strip()
@@ -147,7 +145,7 @@ def list_groups():
     return jsonify(response)
 
 
-@app.route("/profile/security")
+@app.route("/profile/security", methods=['GET', 'PUT'])
 @login_required
 def profile_sec():
     if request.method == 'GET':
@@ -159,7 +157,7 @@ def profile_sec():
             except Exception as e:
                 print(e)
                 return Response("{'db_error':'progile_sec'}", status=404, mimetype='application/json')
-    elif request.method == 'POST':
+    elif request.method == 'PUT':
         try:
             two_f = request.form["two_factor"].strip()
             u = load_user(current_user.user_id)
@@ -178,16 +176,27 @@ def profile_group():
         return list_groups()
 
 
-@app.route("/profile/groups<group_id>")
+@app.route("/profile/groups/<group_id>", methods=['GET', 'PUT', 'DELETE'])
 @login_required
 def group_detail(group_id):
-    if current_user.is_admin == 1:
+    if request.method == 'GET':
+        if current_user.is_admin == 1:
+            try:
+                group = Group.query.get(group_id=group_id).first()
+                return jsonify(group.to_json())
+            except Exception:
+                return Response("{'Db_error' : 'group_detail'}", status=400)
+        return Response("{'unauthorized': True}", status=401, mimetype='application/json')
+    elif request.method == 'POST':
+        pass
+    else:
         try:
             group = Group.query.get(group_id=group_id).first()
-            return jsonify(group.to_json())
+            db.session.delete(group)
+            db.session.commit()
+            return Response("{'status': 'success'}", status=200)
         except Exception:
-            return Response("{'Db_error' : 'group_detail'}", status=400)
-    return Response("{'unauthorized': True}", status=401, mimetype='application/json')
+            return Response("{'Db_error' : 'group_delete'}", status=400)
 
 
 @app.route("/profile/groups/add", methods=['POST'])
@@ -287,6 +296,7 @@ def devices_add():
         new_dev.mac_address = request.form["mac_address"].strip()
         new_dev.more_info = request.form["more_info"].strip()
         new_dev.category_id = request.form["category"].strip()
+        new_dev.usage = request.form["usage"].strip()
         new_dev.owner = current_user.user_id
         try:
             db.session.add(new_dev)
@@ -298,8 +308,19 @@ def devices_add():
             return Response("{'db_error':'device_add}", status=404)
 
 
+def delete_device(id):
+    device = Device.query.filter_by(device_id=id).first()
+    if device is not None:
+        try:
+            db.session.delete(device)
+            db.session.commit()
+            return 0
+        except Exception:
+            return -1
+
+
 @app.route("/devices/room/<name>", defaults={'id': None})
-@app.route("/devices/room/<name>/<id>", methods=['GET', 'POST'])
+@app.route("/devices/room/<name>/<id>", methods=['GET', 'PUT', 'DELETE'])
 @login_required
 def devices_rooms(name, id):
     if id is None:
@@ -319,7 +340,7 @@ def devices_rooms(name, id):
                     else jsonify(DeviceDTO(device).to_json_user())
             except Exception:
                 return Response("{'db_error':'device does not exist'}", status=404)
-        else:
+        elif request.method == 'PUT':
             try:
                 device = Device.query.filter_by(device_id=id).first()
                 name = request.form['name'].strip()
@@ -353,10 +374,16 @@ def devices_rooms(name, id):
                     return Response("{'db_error':'device_update'}", status=404)
             except Exception:
                 return Response("{'db_error':'device_update'}", status=404)
+        else:
+            status = delete_device(id)
+            if status == 0:
+                return Response("{'status': 'success'}", status=200)
+            else:
+                return Response("{'status': 'delete failure'}", status=200)
 
 
 @app.route("/devices/category/<name>", defaults={'id': None})
-@app.route("/devices/category/<name>/<id>", methods=['GET', 'POST'])
+@app.route("/devices/category/<name>/<id>", methods=['GET', 'PUT'])
 @login_required
 def devices_type(name, id):
     if id is None:
@@ -414,6 +441,46 @@ def devices_type(name, id):
 
 # ______ room subset _______________________
 
+@app.route("/rooms/<id>", methods=['GET', 'PUT', 'DELETE'])
+@login_required
+def update_room(id):
+    if request.method == 'GET':
+        try:
+            room = Room.query.filter_by(room_id=id).first()
+            if room is not None:
+                return jsonify(RoomDTO(room).to_json())
+        except Exception as e:
+            return Response("{'db_error':'room_get'}", status=404)
+    elif request.method == 'PUT':
+        try:
+            room = Room.query.filter_by(room_id=id).first()
+            if room is not None:
+                name = request.form['name'].strip()
+                if name != "":
+                    room.name = name
+                size = request.form['size'].strip()
+                if name != "":
+                    room.size = size
+                story = request.form['story'].strip()
+                if name != "":
+                    story.story = story
+                devices = request.form['devices'].strip()
+                if devices != "":
+                    room.devices = devices
+                db.session.add(room)
+                db.session.commit()
+                return jsonify(RoomDTO(room).to_json())
+        except Exception:
+            return Response("{'db_error':'room_update'}", status=404)
+    else:
+        try:
+            room = Room.query.filter_by(room_id=id).first()
+            if room is not None:
+                db.session.delete(room)
+                db.session.commit()
+        except Exception as e:
+            return Response("{'db_error':'room_delete'}", status=404)
+
 @app.route("/rooms/add", methods=['POST'])
 @login_required
 def add_room():
@@ -434,7 +501,6 @@ def add_room():
         return Response("{'db_error':'add_room'}", status=404)
 
 
-
 @app.route("/rooms")
 @login_required
 def get_rooms():
@@ -445,7 +511,11 @@ def get_rooms():
             response.append(room.to_json())
         return jsonify(response)
     except Exception:
-        return Response("{'db_error': 'get_rooms'}",status=404)
+        return Response("{'db_error': 'get_rooms'}", status=404)
+
+
+# * DELETE room
+
 
 # ______________________category subset______________________
 
@@ -462,6 +532,7 @@ def add_cat():
     except Exception:
         return Response("{'db_error':'add_category'}", status=404)
 
+
 @app.route("/categories")
 @login_required
 def get_categories():
@@ -475,8 +546,29 @@ def get_categories():
         return {'db_error': 'get_categories'}
 
 
+@app.route("/categories/<id>", methods=['GET', 'DELETE'])
+@login_required
+def get_categories_byID(id):
+    if request.method == 'GET':
+        try:
+            categories = Category.query.filter_by(category_id=id)
+            return jsonify(categories.to_json())
+        except Exception:
+            return {'db_error': 'get_category_byID'}
+    elif request.method == 'DELETE':
+        try:
+            categories = Category.query.filter_by(category_id=id)
+            db.session.delete(categories)
+            db.session.commit()
+            return Response("{'status': 'success'}")
+        except Exception:
+            return {'db_error': 'delete_category_byID'}
+
+
+# * DELETE category
+
 # _________________________________________________________________________
-#_____________________________available devices ___________________________
+# _____________________________available devices ___________________________
 
 
 def get_categores_devices():
@@ -488,8 +580,12 @@ def get_available_devices(table_name):
     return tab.all()
 
 
-
 # _________________________________________________________________________
+
+# ___________________stats__________________________________________________
+
+
+# _____________________________________________________________________________
 @app.errorhandler(401)
 def unauthorized(e):
     return Response("{'unauthorized': True}", status=401, mimetype='application/json')

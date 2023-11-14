@@ -8,6 +8,7 @@ class Room(db.Model):
     story = db.Column(db.Integer)
     size = db.Column(db.Float)
 
+
     def to_json(self):
         return {
             "room_id": self.room_id,
