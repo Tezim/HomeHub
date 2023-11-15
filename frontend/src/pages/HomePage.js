@@ -16,6 +16,7 @@ import { getCategoriesFromDb } from "../services/CategoriesService";
 import AddRoomModal from "../components/modals/AddRoomModal";
 import AddDeviceModal from "../components/modals/AddDeviceModal";
 import CustomizeRoomsModal from "../components/modals/CustomizeRoomsModal";
+import "../components/scroll.css";
 
 const HomePage = () => {
   const [rooms, setRooms] = useState([]);
@@ -159,7 +160,19 @@ const HomePage = () => {
             justifyContent: "space-between",
           }}
         >
-          <div style={{ display: "flex" }}>
+          <div
+            className="scrollable-div"
+            style={{
+              display: "flex",
+              maxWidth: "55vw",
+              overflowX: "scroll",
+              whiteSpace: "nowrap",
+            }}
+            onWheel={(e) => {
+              const container = e.currentTarget;
+              container.scrollLeft += e.deltaY;
+            }}
+          >
             {rooms.map((r, i) => {
               return (
                 <div

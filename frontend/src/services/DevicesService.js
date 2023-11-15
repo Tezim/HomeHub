@@ -8,6 +8,10 @@ export const getDevicesForRoom = async (name) => {
   return getDataPromise(`devices/room/${name}`);
 };
 
+export const getDevicesForRoomId = async (id) => {
+  return getDataPromise(`devices/room/${id}`);
+};
+
 export const addDeviceToDb = async (device) => {
   return postDataPromise(`devices/add`, device);
 };
