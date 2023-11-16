@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Spacer from "./Spacer";
 
-const NavBarIcon = ({ imgSrc, alt, destination, last }) => {
+const NavBarIcon = ({ imgSrc, alt, destination, onLogout, last }) => {
   const history = useNavigate();
   const [isHovered, setIsHovered] = useState();
   return (
@@ -34,7 +34,10 @@ const NavBarIcon = ({ imgSrc, alt, destination, last }) => {
             justifyContent: "center",
             alignItems: "center",
           }}
-          onClick={() => history(destination)}
+          onClick={() => {
+            if (onLogout) onLogout();
+            history(destination);
+          }}
         >
           <img
             src={imgSrc}

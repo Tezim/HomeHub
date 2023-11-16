@@ -143,7 +143,7 @@ const HomePage = () => {
           borderRadius: "15px",
           padding: "5px",
           margin: "10px",
-          maxWidth: "75vw",
+          maxWidth: "80vw",
         }}
       >
         <PageHeader

@@ -5,10 +5,11 @@ import PageHeader from "../components/PageHeader";
 import { useEffect } from "react";
 import { isAuthenticated } from "../components/helpers/Helpers";
 import CustomLoading from "../components/custom/CustomLoading";
-import { getDevicesFromDb } from "../services/DevicesService";
+import { addDeviceToDb, getDevicesFromDb } from "../services/DevicesService";
 import { getCategoriesFromDb } from "../services/CategoriesService";
 import { getRoomsFromDb } from "../services/RoomsService";
 import SpecificationText from "../components/SpecificationText";
+import AddDeviceModal from "../components/modals/AddDeviceModal";
 
 const DevicesPage = () => {
   const [devices, setDevices] = useState([]);
@@ -16,6 +17,7 @@ const DevicesPage = () => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState({});
+  const [showAddDeviceModal, setShowAddDeviceModal] = useState(false);
   const history = useNavigate();
   const authenticated = isAuthenticated();
 
@@ -43,13 +45,19 @@ const DevicesPage = () => {
       .finally(() => setLoading(false));
   };
 
+  const addDevice = (device) => {
+    setLoading(true);
+    addDeviceToDb(device)
+      .then(getDevices)
+      .catch((error) => console.log(error))
+      .finally(() => setLoading(false));
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-
     const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // +1 because months are 0-indexed
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear();
-
     const formattedDate = `${day}/${month}/${year}`;
     return formattedDate;
   };
@@ -79,10 +87,17 @@ const DevicesPage = () => {
         margin: "10px",
       }}
     >
+      <AddDeviceModal
+        show={showAddDeviceModal}
+        rooms={rooms}
+        categories={categories}
+        onClose={() => setShowAddDeviceModal(false)}
+        onSubmit={(device) => addDevice(device)}
+      />
       <PageHeader
         headerText={"Devices"}
         button={{
-          event: () => console.log("Devices"),
+          event: () => setShowAddDeviceModal(true),
           text: "Add device",
         }}
       />
@@ -91,14 +106,17 @@ const DevicesPage = () => {
           appliances={devices}
           categories={categories}
           rooms={rooms}
-          onSelect={(device) => setSelectedDevice(device)}
+          onSelect={(device) =>
+            selectedDevice !== device
+              ? setSelectedDevice(device)
+              : setSelectedDevice({})
+          }
         />
         {Object.keys(selectedDevice).length > 0 && (
           <div
             style={{
               backgroundColor: "#2b2b2b",
               width: "70%",
-              margin: "5px",
               borderRadius: "10px",
               minHeight: "65vh",
               padding: "20px",
