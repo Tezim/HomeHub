@@ -27,6 +27,7 @@ const DevicesScroll = ({ appliances, rooms, categories, onSelect }) => {
         overflow: "auto",
         overflowX: "hidden",
         maxHeight: "65vh",
+        minHeight: "65vh",
       }}
       className="scrollable-div"
     >
