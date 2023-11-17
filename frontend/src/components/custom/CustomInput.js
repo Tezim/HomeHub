@@ -1,4 +1,12 @@
-const CustomInput = ({ inputText, inputType, inputWidth, value, setValue }) => {
+const CustomInput = ({
+  inputText,
+  inputType,
+  inputWidth,
+  value,
+  setValue,
+  required,
+  placeholder,
+}) => {
   return (
     <div
       style={{
@@ -7,12 +15,22 @@ const CustomInput = ({ inputText, inputType, inputWidth, value, setValue }) => {
         justifyContent: "center",
       }}
     >
-      <label style={{ marginBottom: "10px", fontSize: "22px" }}>
-        {inputText}
-      </label>
+      <div style={{ display: "flex" }}>
+        <div style={{ marginBottom: "10px", fontSize: "22px" }}>
+          {inputText}
+        </div>
+        {required && (
+          <div
+            style={{ fontFamily: "inherit", fontSize: "22px", color: "red" }}
+          >
+            *
+          </div>
+        )}
+      </div>
       <input
         value={value}
         type={inputType}
+        placeholder={placeholder}
         style={{
           width: inputWidth,
           height: "4rem",

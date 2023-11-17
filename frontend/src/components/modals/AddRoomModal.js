@@ -52,6 +52,7 @@ const AddRoomModal = ({ show, onClose, onSubmit }) => {
           inputType={"text"}
           inputWidth={"50vw"}
           value={name}
+          required
           setValue={(e) => setName(e)}
         />
         <CustomInput
@@ -59,6 +60,7 @@ const AddRoomModal = ({ show, onClose, onSubmit }) => {
           inputType={"number"}
           inputWidth={"50vw"}
           value={size}
+          required
           setValue={(e) => setSize(e)}
         />
         <CustomInput
@@ -66,6 +68,7 @@ const AddRoomModal = ({ show, onClose, onSubmit }) => {
           inputType={"number"}
           inputWidth={"50vw"}
           value={story}
+          required
           setValue={(e) => setStory(e)}
         />
         <CustomButton
