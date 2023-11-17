@@ -3,17 +3,13 @@ import { isAuthenticated } from "../components/helpers/Helpers";
 import { useEffect, useState } from "react";
 import PageHeader from "../components/PageHeader";
 import SpecificationText from "../components/SpecificationText";
-import {
-  getProfileFromDb,
-  getProfileRemindersFromDb,
-} from "../services/ProfileService";
+import { getProfileFromDb } from "../services/ProfileService";
 import CustomLoading from "../components/custom/CustomLoading";
 import ProfileSubpage from "../components/profile/ProfileSubpage";
 
 const ProfilePage = () => {
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({});
-  const [reminders, setReminders] = useState();
   const [selectedSubpage, setSelectedSubpage] = useState("General");
   const history = useNavigate();
   const authenticated = isAuthenticated();
@@ -26,19 +22,10 @@ const ProfilePage = () => {
       .finally(() => setLoading(false));
   };
 
-  const getReminders = () => {
-    setLoading(true);
-    getProfileRemindersFromDb()
-      .then((response) => setReminders(response.data))
-      .catch((error) => console.log(error))
-      .finally(() => setLoading(false));
-  };
-
   useEffect(() => {
     if (!authenticated) history("/");
     let promises = [];
     promises.push(getProfile());
-    promises.push(getReminders());
     Promise.all(promises);
   }, [authenticated, history]);
 
@@ -79,11 +66,6 @@ const ProfilePage = () => {
             onSelect={() => setSelectedSubpage("General")}
           />
           <ProfileSubpage
-            subpageText={"Reminders"}
-            selected={selectedSubpage}
-            onSelect={() => setSelectedSubpage("Reminders")}
-          />
-          <ProfileSubpage
             subpageText={"Group"}
             selected={selectedSubpage}
             onSelect={() => setSelectedSubpage("Group")}
@@ -104,15 +86,6 @@ const ProfilePage = () => {
               spec={"2-Factor Auth."}
               value={profile?.twoF_enabled ? "Enabled" : "Disabled"}
             />
-          </div>
-        )}
-        {selectedSubpage === "Reminders" && (
-          <div
-            style={{
-              padding: "30px 50px 60px 50px",
-            }}
-          >
-            <SpecificationText spec={"Status"} value={reminders.reminders} />
           </div>
         )}
         {selectedSubpage === "Group" && (
