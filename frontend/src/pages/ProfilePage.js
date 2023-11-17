@@ -5,15 +5,16 @@ import PageHeader from "../components/PageHeader";
 import SpecificationText from "../components/SpecificationText";
 import {
   getProfileFromDb,
-  getProfileRemindersFromDb,
+  updateProfileInDb,
 } from "../services/ProfileService";
 import CustomLoading from "../components/custom/CustomLoading";
 import ProfileSubpage from "../components/profile/ProfileSubpage";
+import EditProfileModal from "../components/modals/EditProfileModal";
 
 const ProfilePage = () => {
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({});
-  const [reminders, setReminders] = useState();
+  const [edit, setEdit] = useState(false);
   const [selectedSubpage, setSelectedSubpage] = useState("General");
   const history = useNavigate();
   const authenticated = isAuthenticated();
@@ -26,10 +27,10 @@ const ProfilePage = () => {
       .finally(() => setLoading(false));
   };
 
-  const getReminders = () => {
+  const updateProfile = (profile) => {
     setLoading(true);
-    getProfileRemindersFromDb()
-      .then((response) => setReminders(response.data))
+    updateProfileInDb(profile)
+      .then((response) => setProfile(response.data))
       .catch((error) => console.log(error))
       .finally(() => setLoading(false));
   };
@@ -38,7 +39,6 @@ const ProfilePage = () => {
     if (!authenticated) history("/");
     let promises = [];
     promises.push(getProfile());
-    promises.push(getReminders());
     Promise.all(promises);
   }, [authenticated, history]);
 
@@ -54,6 +54,12 @@ const ProfilePage = () => {
         justifyContent: "center",
       }}
     >
+      {edit && (
+        <EditProfileModal
+          onClose={() => setEdit(false)}
+          onSubmit={(profile) => updateProfile(profile)}
+        />
+      )}
       <div
         style={{
           display: authenticated ? "flex" : "none",
@@ -66,7 +72,13 @@ const ProfilePage = () => {
           margin: "10px",
         }}
       >
-        <PageHeader headerText={"Profile"} />
+        <PageHeader
+          headerText={"Profile"}
+          button={{
+            text: "Edit",
+            event: () => setEdit(true),
+          }}
+        />
         <div
           style={{
             display: "flex",
@@ -77,11 +89,6 @@ const ProfilePage = () => {
             subpageText={"General"}
             selected={selectedSubpage}
             onSelect={() => setSelectedSubpage("General")}
-          />
-          <ProfileSubpage
-            subpageText={"Reminders"}
-            selected={selectedSubpage}
-            onSelect={() => setSelectedSubpage("Reminders")}
           />
           <ProfileSubpage
             subpageText={"Group"}
@@ -104,15 +111,6 @@ const ProfilePage = () => {
               spec={"2-Factor Auth."}
               value={profile?.twoF_enabled ? "Enabled" : "Disabled"}
             />
-          </div>
-        )}
-        {selectedSubpage === "Reminders" && (
-          <div
-            style={{
-              padding: "30px 50px 60px 50px",
-            }}
-          >
-            <SpecificationText spec={"Status"} value={reminders.reminders} />
           </div>
         )}
         {selectedSubpage === "Group" && (

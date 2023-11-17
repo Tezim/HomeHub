@@ -1,21 +1,19 @@
 import { useState } from "react";
-import CustomInput from "../custom/CustomInput";
 import CustomButton from "../custom/CustomButton";
+import CustomInput from "../custom/CustomInput";
 
-const AddRoomModal = ({ show, onClose, onSubmit }) => {
-  const [name, setName] = useState("");
-  const [story, setStory] = useState();
-  const [size, setSize] = useState();
+const EditProfileModal = ({ onClose, onSubmit }) => {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
 
-  const createRoomObject = () => {
+  const createEditProfileObject = () => {
     const formData = new FormData();
-    formData.append("name", name);
-    formData.append("story", story);
-    formData.append("size", size);
+    if (username) formData.append("username", username);
+    if (email) formData.append("email", email);
+    if (phone) formData.append("phone", phone);
     return formData;
   };
-
-  if (!show) return;
 
   return (
     <div
@@ -46,43 +44,44 @@ const AddRoomModal = ({ show, onClose, onSubmit }) => {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ fontFamily: "inherit", fontSize: "40px" }}>Add Room</div>
+        <div style={{ fontFamily: "inherit", fontSize: "40px" }}>
+          Edit Profile
+        </div>
         <CustomInput
-          inputText={"Room name"}
+          inputText={"Username"}
           inputType={"text"}
           inputWidth={"50vw"}
-          value={name}
-          required
-          setValue={(e) => setName(e)}
+          value={username}
+          setValue={(e) => setUsername(e)}
         />
         <CustomInput
-          inputText={"Room size"}
-          inputType={"number"}
+          inputText={"Email"}
+          inputType={"email"}
           inputWidth={"50vw"}
-          value={size}
-          required
-          setValue={(e) => setSize(e)}
+          value={email}
+          placeholder={"example@email.com"}
+          setValue={(e) => setEmail(e)}
         />
         <CustomInput
-          inputText={"Room story"}
-          inputType={"number"}
+          inputText={"Phone number"}
+          inputType={"text"}
           inputWidth={"50vw"}
-          value={story}
-          required
-          setValue={(e) => setStory(e)}
+          value={phone}
+          placeholder={"+421901234567"}
+          setValue={(e) => setPhone(e)}
         />
         <CustomButton
           buttonType={"button"}
-          buttonText={"Create"}
+          buttonText={"Save changes"}
           onClick={() => {
-            onSubmit(createRoomObject());
+            onSubmit(createEditProfileObject());
             onClose();
           }}
-          disabled={!name || !story || !size}
+          disabled={!username && !email && !phone}
         />
       </div>
     </div>
   );
 };
 
-export default AddRoomModal;
+export default EditProfileModal;

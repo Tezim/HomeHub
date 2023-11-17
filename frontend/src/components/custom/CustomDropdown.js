@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-const CustomDropdown = ({ options, onSelect, dropdownText }) => {
+const CustomDropdown = ({ options, onSelect, dropdownText, required }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState();
   const dropdownRef = useRef(null);
@@ -28,9 +28,18 @@ const CustomDropdown = ({ options, onSelect, dropdownText }) => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      <label style={{ marginBottom: "10px", fontSize: "22px" }}>
-        {dropdownText}
-      </label>
+      <div style={{ display: "flex" }}>
+        <div style={{ marginBottom: "10px", fontSize: "22px" }}>
+          {dropdownText}
+        </div>
+        {required && (
+          <div
+            style={{ fontFamily: "inherit", fontSize: "22px", color: "red" }}
+          >
+            *
+          </div>
+        )}
+      </div>
       <div style={{ width: "50vw", fontFamily: "inherit" }} ref={dropdownRef}>
         <div
           style={{

@@ -69,14 +69,16 @@ const AddDeviceModal = ({
           inputType={"text"}
           inputWidth={"50vw"}
           value={name}
+          required
           setValue={(e) => setName(e)}
         />
-
         <CustomInput
           inputText={"IP Address"}
           inputType={"text"}
           inputWidth={"50vw"}
           value={ipAddress}
+          placeholder={"192.168.0.1"}
+          required
           setValue={(e) => setIpAddress(e)}
         />
         <CustomInput
@@ -84,17 +86,21 @@ const AddDeviceModal = ({
           inputType={"text"}
           inputWidth={"50vw"}
           value={macAddress}
+          placeholder={"00-B0-D0-63-C2-26"}
+          required
           setValue={(e) => setMacAddress(e)}
         />
         <CustomDropdown
           options={rooms}
           selectedItem={selectedRoom}
           onSelect={(option) => setRoom(option)}
+          required
           dropdownText={"Room"}
         />
         <CustomDropdown
           options={categories}
           onSelect={(option) => setCategory(option)}
+          required
           dropdownText={"Category"}
         />
         <CustomInput
