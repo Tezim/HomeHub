@@ -1,4 +1,4 @@
-import { getDataPromise, postDataPromise } from "./ApiService";
+import { getDataPromise, postDataPromise, putDataPromise } from "./ApiService";
 
 export const loginUser = async (params) => {
   return postDataPromise(`login`, params);
@@ -22,4 +22,8 @@ export const getProfileGroupsFromDb = async () => {
 
 export const getProfileRemindersFromDb = async () => {
   return getDataPromise(`profile/reminders`);
+};
+
+export const updateProfileInDb = async (profile) => {
+  return putDataPromise(`profile/general`, profile);
 };

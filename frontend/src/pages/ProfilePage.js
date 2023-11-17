@@ -3,13 +3,18 @@ import { isAuthenticated } from "../components/helpers/Helpers";
 import { useEffect, useState } from "react";
 import PageHeader from "../components/PageHeader";
 import SpecificationText from "../components/SpecificationText";
-import { getProfileFromDb } from "../services/ProfileService";
+import {
+  getProfileFromDb,
+  updateProfileInDb,
+} from "../services/ProfileService";
 import CustomLoading from "../components/custom/CustomLoading";
 import ProfileSubpage from "../components/profile/ProfileSubpage";
+import EditProfileModal from "../components/modals/EditProfileModal";
 
 const ProfilePage = () => {
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({});
+  const [edit, setEdit] = useState(false);
   const [selectedSubpage, setSelectedSubpage] = useState("General");
   const history = useNavigate();
   const authenticated = isAuthenticated();
@@ -17,6 +22,14 @@ const ProfilePage = () => {
   const getProfile = () => {
     setLoading(true);
     getProfileFromDb()
+      .then((response) => setProfile(response.data))
+      .catch((error) => console.log(error))
+      .finally(() => setLoading(false));
+  };
+
+  const updateProfile = (profile) => {
+    setLoading(true);
+    updateProfileInDb(profile)
       .then((response) => setProfile(response.data))
       .catch((error) => console.log(error))
       .finally(() => setLoading(false));
@@ -41,6 +54,12 @@ const ProfilePage = () => {
         justifyContent: "center",
       }}
     >
+      {edit && (
+        <EditProfileModal
+          onClose={() => setEdit(false)}
+          onSubmit={(profile) => updateProfile(profile)}
+        />
+      )}
       <div
         style={{
           display: authenticated ? "flex" : "none",
@@ -53,7 +72,13 @@ const ProfilePage = () => {
           margin: "10px",
         }}
       >
-        <PageHeader headerText={"Profile"} />
+        <PageHeader
+          headerText={"Profile"}
+          button={{
+            text: "Edit",
+            event: () => setEdit(true),
+          }}
+        />
         <div
           style={{
             display: "flex",
