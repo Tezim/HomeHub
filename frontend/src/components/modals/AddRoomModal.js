@@ -44,7 +44,7 @@ const AddRoomModal = ({ show, onClose, onSubmit }) => {
         style={{
           backgroundColor: "#1f1f1f",
           width: "55vw",
-          height: "50vh",
+          height: "600px",
           borderRadius: "10px",
           display: "flex",
           flexDirection: "column",

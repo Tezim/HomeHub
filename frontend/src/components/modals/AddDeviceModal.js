@@ -66,7 +66,7 @@ const AddDeviceModal = ({
         style={{
           backgroundColor: "#1f1f1f",
           width: "55vw",
-          height: "70vh",
+          height: "850px",
           borderRadius: "10px",
           display: "flex",
           flexDirection: "column",
