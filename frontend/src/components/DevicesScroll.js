@@ -214,55 +214,56 @@ const DevicesScroll = ({ appliances, rooms, categories, onSelect }) => {
         style={{
           display: "flex",
           backgroundColor: "black",
-          width: "100%",
-          marginBottom: "5px",
-          borderRadius: "10px",
-          padding: "5px",
-          fontSize: "25px",
-          minWidth: "25vw",
-          justifyContent: "space-between",
           alignItems: "center",
+          width: "100%",
+          justifyContent: "space-between",
+          borderRadius: "10px",
+          minWidth: "25vw",
+          marginBottom: "5px",
           cursor: "pointer",
         }}
         onClick={() => setIsDevicesOpen(!isDevicesOpen)}
       >
-        <div>All Devices</div>
-        <span>{isDevicesOpen ? "▲" : "▼"}</span>
+        <div
+          style={{
+            fontSize: "25px",
+            textAlign: "center",
+            padding: "5px",
+          }}
+        >
+          All Devices
+        </div>
+        <span style={{ paddingRight: "5px", fontSize: "25px" }}>
+          {isDevicesOpen ? "▲" : "▼"}
+        </span>
       </div>
-      {isDevicesOpen &&
-        appliances?.map((a, i) => {
-          return (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                backgroundColor:
-                  isSelected === a.device_id ? "orange" : "#454544",
-                borderRadius: "20px",
-                padding: "10px",
-                marginBottom: "10px",
-                flex: 1,
-                minWidth: "25vw",
-              }}
-              onClick={() => {
-                isSelected === a.device_id
-                  ? setIsSelected("")
-                  : setIsSelected(a.device_id);
-                onSelect(a);
-              }}
-              key={i}
-            >
+      <div style={{ padding: isDevicesOpen ? "5px" : "0px", width: "100%" }}>
+        {isDevicesOpen &&
+          appliances?.map((d, i) => {
+            return (
               <div
                 style={{
+                  backgroundColor:
+                    isSelected === d.device_id ? "orange" : "#454544",
+                  width: "100%",
+                  borderRadius: "10px",
+                  padding: "5px",
+                  marginBottom: "5px",
                   fontSize: "25px",
                 }}
+                onClick={() => {
+                  isSelected === d.device_id
+                    ? setIsSelected("")
+                    : setIsSelected(d.device_id);
+                  onSelect(d);
+                }}
+                key={i}
               >
-                {a.name}
+                {d.name}
               </div>
-              <div style={{ fontSize: "15px", color: "#858483" }}>{a.room}</div>
-            </div>
-          );
-        })}
+            );
+          })}
+      </div>
     </div>
   );
 };
