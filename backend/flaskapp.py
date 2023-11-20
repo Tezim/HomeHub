@@ -38,7 +38,7 @@ def create_admin():
 
 
 with app.app_context():
-    # db.drop_all()
+    db.drop_all()
     db.create_all()
     db.session.add(create_admin())
     db.session.commit()
@@ -63,7 +63,7 @@ def login():
             if u is not None:
                 if helpers.pwd_hash_check(password, u.psswd):
                     response = BaseResponse()
-                    response.status = "Sucess"
+                    response.status = "Success"
                     response.user = UserDTO(u)
                     login_user(u)
                     return jsonify(response.to_json())
@@ -87,6 +87,38 @@ def logout():
     logout_user()
     session.pop('id', None)
     return redirect(url_for('login'))
+
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return {}
+    elif request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        password = request.form.get('password')
+        if username is None or phone is None or email is None or password is None:
+            return Response({}, status=500)
+        u = User.query.filter_by(name=username).first()
+        if u is None:
+            if password is not None:
+                password = password.strip()
+            new_user = User(username, email, helpers.pwd_hash(password))
+            new_user.photo = paths.PHOTO_DIRECTORY_DEFAULT
+            new_user.is_admin = False
+            new_user.two_factor = False
+            new_user.groups = ""
+            new_user.phone = phone
+            db.session.add(new_user)
+            user = User.query.filter_by(name=username).first()
+            try:
+                db.session.commit()
+                return jsonify(UserDTO(user).to_json())
+            except Exception:
+                return Response("{'db_error': 'register_user'}", status=500)
+        else:
+            return Response("{'error':'username_exists}", status=400)
 
 
 # profile section
@@ -202,7 +234,7 @@ def group_detail(group_id):
             db.session.commit()
             return Response("{'status': 'success'}", status=200)
         except Exception:
-            return Response("{'Db_error' : 'group_delete'}", status=400)
+            return Response("{'Db_error' : 'group_delete'}", status=500)
 
 
 @app.route("/profile/groups/add", methods=['POST'])
@@ -584,10 +616,9 @@ def get_available_devices(table_name):
     tab = tiny_db.table(table_name)
     return tab.all()
 
-
-# _________________________________________________________________________
-
 # ___________________stats__________________________________________________
+
+# ! stats endpointy
 
 
 # _____________________________________________________________________________

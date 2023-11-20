@@ -67,7 +67,20 @@ const LoginPage = () => {
             value={password}
             setValue={(e) => setPassword(e)}
           />
-          <div style={{}} />
+          <div style={{ color: "#888888", fontSize: "15px" }}>
+            Don't have an account yet?{" "}
+            <span
+              onClick={() => history("/register")}
+              style={{
+                textDecoration: "underline",
+                color: "orange",
+                cursor: "pointer",
+              }}
+            >
+              Sign up
+            </span>
+          </div>
+          <div />
           <CustomButton
             buttonText={"Login"}
             buttonType={"button"}

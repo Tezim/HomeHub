@@ -1,4 +1,5 @@
 import Clock from "./Clock";
+import GithubLink from "./GithubLink";
 import Logo from "./Logo";
 import NavBar from "./NavBar";
 
@@ -11,6 +12,7 @@ const TopBar = () => {
           flexDirection: "row",
           justifyContent: "space-between",
           margin: "20px",
+          zIndex: "10000",
         }}
       >
         <div style={{ flex: 1 }}>
@@ -19,7 +21,17 @@ const TopBar = () => {
         <div style={{ flex: 2, display: "flex", justifyContent: "center" }}>
           <NavBar />
         </div>
-        <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ marginRight: "15px" }}>
+            <GithubLink />
+          </div>
           <Clock />
         </div>
       </div>

@@ -229,7 +229,7 @@
               }
             }
           },
-          "404" : {
+          "500" : {
             "description": "Database error handler",
             "schema": {
               "example": {"db_error": "turn on 2F"}
@@ -258,8 +258,8 @@
               "example": {}
             }
           },
-          "400": {
-            "description": "Dabase error handler",
+          "500": {
+            "description": "Database error handler",
             "schema": {
               "example": {"db_error": "turn on 2F"}
             }
@@ -328,7 +328,7 @@
               }
             }
           },
-          "400": {
+          "500": {
             "description": "Database error handle",
             "schema": {
               "example": {"Db_error" : "group_detail"}
@@ -495,7 +495,7 @@
               "example": {}
             }
           },
-          "400": {
+          "500": {
             "description": "Database exception",
             "schema": {
               "example": {}
@@ -712,7 +712,7 @@
             },
             "description": ""
           },
-          "404": {}
+          "500": {}
         }
       }
     },
@@ -876,7 +876,7 @@
         }
       }
     },
-     "/devices/category/<name>": {
+    "/devices/category/<name>": {
       "get": {
         "tags": [
           "Devices"
@@ -928,11 +928,11 @@
             },
             "description": ""
           },
-          "404": {}
+          "500": {}
         }
       }
     },
-     "/devices/category/<name>/<id>": {
+    "/devices/category/<name>/<id>": {
       "get": {
         "tags": ["Devices"],
         "description": "Returns single device with specified id in chosen room, use for detail",
@@ -977,7 +977,7 @@
               "example": {"unathorized": "true"}
             }
           },
-          "404": {
+          "500": {
             "description": "",
             "schema": {
               "example": {"db_error": "device_update"}
@@ -1135,7 +1135,7 @@
               "example": {"unathorized":  "true"}
             }
           },
-          "404": {
+          "500": {
             "description": "",
             "schema": {
               "example": {"db_error": "add_room"}
@@ -1183,8 +1183,7 @@
         }
       }
     },
-
-     "/categories" : {
+    "/categories" : {
       "get": {
         "tags": ["Categories"],
         "description": "Returns all categories defined in house",
@@ -1212,7 +1211,7 @@
               "example": {"unauthorized": "true"}
             }
           },
-          "404": {
+          "500": {
             "description": "",
             "schema": {
               "example": {"db_error": "get_categories"}
@@ -1221,7 +1220,7 @@
         }
       }
     },
-     "/categories/add": {
+    "/categories/add": {
       "post": {
         "tags": ["Categories"],
         "description": "Creates new category",
@@ -1249,7 +1248,7 @@
               "example": {"unathorized":  "true"}
             }
           },
-          "404": {
+          "500": {
             "description": "",
             "schema": {
               "example": {"db_error": "add_category"}
@@ -1319,7 +1318,7 @@
           }
         ],
         "responses": {
-          "404": {
+          "500": {
             "description": "",
             "schema": {
               "example": {"db_error": "rooms_update"}
@@ -1383,7 +1382,7 @@
               "example": {"unauthorized": "true"}
             }
           },
-          "404": {
+          "500": {
             "description": "",
             "schema": {
               "example": {"db_error": "delete_category_byID"}
@@ -1409,7 +1408,7 @@
               "example": {"unauthorized": "true"}
             }
           },
-          "404": {
+          "500": {
             "description": "",
             "schema": {
               "example": {"db_error": "delete_category_byID"}
@@ -1427,10 +1426,60 @@
           }
         }
       }
+    },
+    "/register": {
+      "post": {
+        "parameters": [
+          {
+            "name": "username",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "phone",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": ["Basics"],
+        "description": "Register new user",
+        "responses": {
+          "200": {
+            "schema": {
+              "example": {
+                  "email": "test@test.sk",
+                  "groups": null,
+                  "id": 2,
+                  "phone": "7968687687",
+                  "photo": "C:\\Users\\Tatiana\\Documents\\GitHub\\HomeIO\\photos\\default.jpg",
+                  "twoF_enabled": false,
+                  "username": "admin1"
+              }
+            },
+            "description": ""
+          },
+          "500": {
+            "description": "If any of required parameters are empty or any other db error"
+          },
+          "400": {
+            "description": "Username already exists"
+          }
+        }
+      }
     }
-
-
-
-
   }
 }
