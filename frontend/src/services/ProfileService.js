@@ -4,6 +4,10 @@ export const loginUser = async (params) => {
   return postDataPromise(`login`, params);
 };
 
+export const registerUser = async (params) => {
+  return postDataPromise(`register`, params);
+};
+
 export const logoutUser = async () => {
   return getDataPromise(`logout`);
 };

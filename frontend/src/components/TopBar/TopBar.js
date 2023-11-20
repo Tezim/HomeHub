@@ -11,6 +11,7 @@ const TopBar = () => {
           flexDirection: "row",
           justifyContent: "space-between",
           margin: "20px",
+          zIndex: "10000",
         }}
       >
         <div style={{ flex: 1 }}>
