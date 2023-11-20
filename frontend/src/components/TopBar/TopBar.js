@@ -13,9 +13,15 @@ const TopBar = () => {
           margin: "20px",
         }}
       >
-        <Logo />
-        <NavBar />
-        <Clock />
+        <div style={{ flex: 1 }}>
+          <Logo />
+        </div>
+        <div style={{ flex: 2, display: "flex", justifyContent: "center" }}>
+          <NavBar />
+        </div>
+        <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+          <Clock />
+        </div>
       </div>
     </div>
   );
