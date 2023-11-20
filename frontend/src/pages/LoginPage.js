@@ -24,8 +24,14 @@ const LoginPage = () => {
     sessionStorage.removeItem("authenticated");
   }, []);
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      login();
+    }
+  };
+
   return (
-    <div>
+    <div onKeyDown={handleKeyPress}>
       <form
         style={{
           display: "flex",

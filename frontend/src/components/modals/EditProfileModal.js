@@ -15,6 +15,13 @@ const EditProfileModal = ({ onClose, onSubmit }) => {
     return formData;
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter" && (username || email || phone)) {
+      onSubmit(createEditProfileObject());
+      onClose();
+    }
+  };
+
   return (
     <div
       style={{
@@ -41,8 +48,11 @@ const EditProfileModal = ({ onClose, onSubmit }) => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "space-evenly",
+          outline: "none",
         }}
         onClick={(e) => e.stopPropagation()}
+        tabIndex={"0"}
+        onKeyDown={handleKeyPress}
       >
         <div style={{ fontFamily: "inherit", fontSize: "40px" }}>
           Edit Profile

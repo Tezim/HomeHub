@@ -4,8 +4,8 @@ import CustomButton from "../custom/CustomButton";
 
 const AddRoomModal = ({ show, onClose, onSubmit }) => {
   const [name, setName] = useState("");
-  const [story, setStory] = useState();
-  const [size, setSize] = useState();
+  const [story, setStory] = useState("");
+  const [size, setSize] = useState("");
 
   const createRoomObject = () => {
     const formData = new FormData();
@@ -13,6 +13,13 @@ const AddRoomModal = ({ show, onClose, onSubmit }) => {
     formData.append("story", story);
     formData.append("size", size);
     return formData;
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter" && name && story && size) {
+      onSubmit(createRoomObject());
+      onClose();
+    }
   };
 
   if (!show) return;
@@ -43,8 +50,11 @@ const AddRoomModal = ({ show, onClose, onSubmit }) => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "space-evenly",
+          outline: "none",
         }}
         onClick={(e) => e.stopPropagation()}
+        tabIndex={"0"}
+        onKeyDown={handleKeyPress}
       >
         <div style={{ fontFamily: "inherit", fontSize: "40px" }}>Add Room</div>
         <CustomInput

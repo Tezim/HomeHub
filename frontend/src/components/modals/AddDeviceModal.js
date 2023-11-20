@@ -18,7 +18,7 @@ const AddDeviceModal = ({
   const [info, setInfo] = useState("");
   const [category, setCategory] = useState(null);
 
-  const createRoomObject = () => {
+  const createDeviceObject = () => {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("room_id", room.room_id);
@@ -28,6 +28,20 @@ const AddDeviceModal = ({
     formData.append("category", category.category_id);
     formData.append("usage", 0);
     return formData;
+  };
+
+  const handleKeyPress = (event) => {
+    if (
+      event.key === "Enter" &&
+      name &&
+      ipAddress &&
+      macAddress &&
+      room &&
+      category
+    ) {
+      onSubmit(createDeviceObject());
+      onClose();
+    }
   };
 
   if (!show) return;
@@ -58,8 +72,11 @@ const AddDeviceModal = ({
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "space-evenly",
+          outline: "none",
         }}
         onClick={(e) => e.stopPropagation()}
+        tabIndex={"0"}
+        onKeyDown={handleKeyPress}
       >
         <div style={{ fontFamily: "inherit", fontSize: "40px" }}>
           Add Device
@@ -114,7 +131,7 @@ const AddDeviceModal = ({
           buttonType={"button"}
           buttonText={"Create"}
           onClick={() => {
-            onSubmit(createRoomObject());
+            onSubmit(createDeviceObject());
             onClose();
           }}
           disabled={!name || !ipAddress || !room || !macAddress || !category}
