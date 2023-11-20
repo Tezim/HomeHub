@@ -1,3 +1,4 @@
+import Footer from "./Footer";
 import TopBar from "./TopBar/TopBar";
 
 const Layout = (props) => {
@@ -14,6 +15,7 @@ const Layout = (props) => {
       <div style={{ flex: 1, width: "100%", padding: "10px" }}>
         {props.children}
       </div>
+      <Footer />
     </div>
   );
 };

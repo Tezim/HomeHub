@@ -1,15 +1,19 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Spacer from "./Spacer";
 
 const NavBarIcon = ({ imgSrc, alt, destination, onLogout, last }) => {
   const history = useNavigate();
-  const [isHovered, setIsHovered] = useState();
+  const location = useLocation();
+  const [isHovered, setIsHovered] = useState(false);
+
+  const isActive = location.pathname === destination && destination !== "/";
+
   return (
     <>
       <div
         style={{
-          backgroundColor: isHovered ? "orange" : "transparent",
+          backgroundColor: isHovered || isActive ? "orange" : "transparent",
           borderRadius: "10px",
           padding: "7px",
           display: "flex",

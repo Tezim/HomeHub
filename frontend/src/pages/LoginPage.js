@@ -24,8 +24,14 @@ const LoginPage = () => {
     sessionStorage.removeItem("authenticated");
   }, []);
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      login();
+    }
+  };
+
   return (
-    <div>
+    <div onKeyDown={handleKeyPress}>
       <form
         style={{
           display: "flex",
@@ -42,13 +48,13 @@ const LoginPage = () => {
             flexDirection: "column",
             borderRadius: "10px",
             height: "25rem",
-            width: "35vw",
+            width: "45vw",
             justifyContent: "space-evenly",
           }}
         >
           <div style={{ fontSize: "35px", marginBottom: "10px" }}>Login</div>
           <CustomInput
-            inputText={"Email:"}
+            inputText={"Username:"}
             inputType={"text"}
             inputWidth={"25vw"}
             value={userName}
