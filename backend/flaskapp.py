@@ -10,6 +10,7 @@ from backend.DTO.category_model import Category
 from backend.DTO.device_DTO import DeviceDTO
 from backend.DTO.goup_model import Group
 from backend.DTO.room_model import Room
+from backend.DTO.stats_model import Stats
 from backend.DTO.user_DTO import UserDTO
 from backend.app_config import app, db, login
 from backend.DTO.user_model import User
@@ -38,7 +39,7 @@ def create_admin():
 
 
 with app.app_context():
-    db.drop_all()
+    #db.drop_all()
     db.create_all()
     db.session.add(create_admin())
     db.session.commit()
@@ -341,6 +342,7 @@ def devices_add():
         try:
             db.session.add(new_dev)
             db.session.commit()
+            new_dev = Device.query.filter_by(device_id=id).first(new_dev.device_id)
             return jsonify(DeviceDTO(new_dev).to_json()) if current_user.is_admin \
                 else jsonify(DeviceDTO(new_dev).to_json_user())
         except Exception as e:
@@ -524,6 +526,7 @@ def update_room(id):
         except Exception as e:
             return Response("{'db_error':'room_delete'}", status=404)
 
+
 @app.route("/rooms/add", methods=['POST'])
 @login_required
 def add_room():
@@ -604,6 +607,7 @@ def get_categories_byID(id):
         except Exception:
             return {'db_error': 'delete_category_byID'}
 
+
 # _________________________________________________________________________
 # _____________________________available devices ___________________________
 
@@ -616,9 +620,28 @@ def get_available_devices(table_name):
     tab = tiny_db.table(table_name)
     return tab.all()
 
+
 # ___________________stats__________________________________________________
 
 # ! stats endpointy
+@login_required
+@app.route("/stats", methods=['GET'], defaults={'id': None})
+@app.route("/stats/<id>")
+def stats(id):
+    if id is None:
+        return {}
+    else:
+        try:
+            device = Device.query.filter_by(device_id=id).first()
+            st = Stats.query.filter_by(stats_id=device.statistics).first()
+            if st is not None:
+                return jsonify(st.to_json())
+            else:
+                return Response("{'db_error': 'no_stats_available'}", status=404)
+        except Exception:
+            return Response("{'db_error': 'stats_getDev'}", status=500)
+
+
 
 
 # _____________________________________________________________________________
