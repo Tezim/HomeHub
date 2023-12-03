@@ -339,10 +339,17 @@ def devices_add():
         new_dev.category_id = request.form.get("category")
         new_dev.usage = request.form.get("usage")
         new_dev.owner = current_user.user_id
+        stats = Stats()
+        try :
+            db.session.add(stats)
+            db.session.commit()
+        except Exception:
+            return Response("{'db_error':'device_add_stats_creation}", status=500)
+        new_dev.statistics = stats.stats_id
         try:
             db.session.add(new_dev)
             db.session.commit()
-            new_dev = Device.query.filter_by(device_id=id).first(new_dev.device_id)
+            new_dev = Device.query.filter_by(device_id=new_dev.device_id).first()
             return jsonify(DeviceDTO(new_dev).to_json()) if current_user.is_admin \
                 else jsonify(DeviceDTO(new_dev).to_json_user())
         except Exception as e:
@@ -639,7 +646,7 @@ def stats(id):
             else:
                 return Response("{'db_error': 'no_stats_available'}", status=404)
         except Exception:
-            return Response("{'db_error': 'stats_getDev'}", status=500)
+            return Response("{'db_error': 'stats_getDev_no_device'}", status=500)
 
 
 
