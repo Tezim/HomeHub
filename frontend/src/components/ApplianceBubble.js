@@ -1,7 +1,6 @@
-import { useState } from "react";
 import CustomSlider from "./custom/CustomSlider";
 
-const ApplianceBubble = ({ appliance }) => {
+const ApplianceBubble = ({ appliance, onSliderClick }) => {
   const adjustFontSize = (word) => {
     let baseSize = 25;
     let maxLength = 8;
@@ -12,13 +11,25 @@ const ApplianceBubble = ({ appliance }) => {
       return `${baseSize}px`;
     }
   };
-  const [isOn, setIsOn] = useState(appliance.status);
+
+  const changeDeviceState = () => {
+    const formData = new FormData();
+    formData.append("name", appliance.name);
+    formData.append("room_id", appliance.room_id);
+    formData.append("ip_address", appliance.IP_address);
+    formData.append("mac_address", appliance.MAC_address);
+    formData.append("more_info", appliance.add_info);
+    formData.append("category", appliance.category);
+    formData.append("status", appliance.status === 1 ? 0 : 1);
+    return formData;
+  };
+
   return (
     <div
       style={{
         flex: "1 0 calc(20% - 10px)",
         maxWidth: "calc(20% - 10px)",
-        background: isOn ? "orange" : "#454544",
+        background: appliance.status === 1 ? "orange" : "#454544",
         padding: "10px",
         borderRadius: "15px",
         textAlign: "center",
@@ -46,7 +57,12 @@ const ApplianceBubble = ({ appliance }) => {
             {appliance.status ? "Connected" : "Disconnected"}
           </div>
         </div>
-        <CustomSlider toggle={isOn} onChange={() => setIsOn(!isOn)} />
+        <CustomSlider
+          toggle={appliance.status === 1}
+          onChange={() =>
+            onSliderClick(appliance.device_id, changeDeviceState())
+          }
+        />
       </div>
     </div>
   );

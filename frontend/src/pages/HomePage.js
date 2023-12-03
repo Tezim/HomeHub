@@ -11,7 +11,11 @@ import {
   getRoomsFromDb,
   updateRoomDb,
 } from "../services/RoomsService";
-import { addDeviceToDb, getDevicesForRoom } from "../services/DevicesService";
+import {
+  addDeviceToDb,
+  getDevicesForRoom,
+  updateDeviceInDb,
+} from "../services/DevicesService";
 import { getCategoriesFromDb } from "../services/CategoriesService";
 import AddRoomModal from "../components/modals/AddRoomModal";
 import AddDeviceModal from "../components/modals/AddDeviceModal";
@@ -78,6 +82,14 @@ const HomePage = () => {
     setLoading(true);
     deleteRoomFromDb(id)
       .then(getRooms)
+      .catch((error) => console.log(error))
+      .finally(() => setLoading(false));
+  };
+
+  const deviceState = (id, device) => {
+    setLoading(true);
+    updateDeviceInDb(selectedRoom.name, id, device)
+      .then(() => getDevicesRoom())
       .catch((error) => console.log(error))
       .finally(() => setLoading(false));
   };
@@ -226,6 +238,7 @@ const HomePage = () => {
         <PageHeader headerText={"Quick use"} />
         <AppliancesSettings
           appliances={devices}
+          onSliderClick={(id, device) => deviceState(id, device)}
           onButtonClick={() => setShowAddDeviceModal(true)}
         />
       </div>

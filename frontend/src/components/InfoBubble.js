@@ -7,14 +7,15 @@ const InfoBubble = ({ text, info, img, slider, temperature }) => {
   return (
     <div
       style={{
-        flex: "1 0 calc(20% - 10px)",
-        maxWidth: "calc(20% - 10px)",
+        flex: "1 0 calc(30% - 10px)",
+        maxWidth: "calc(30% - 10px)",
         background: isOn ? "orange" : "#454544",
         padding: "10px",
         borderRadius: "15px",
         textAlign: "center",
         marginBottom: "10px",
         minWidth: "200px",
+        width: "fit-content",
         fontSize: "25px",
         justifyContent: "space-between",
         display: "flex",
