@@ -1,6 +1,11 @@
 import ApplianceBubble from "./ApplianceBubble";
 
-const AppliancesSettings = ({ appliances, visible, onButtonClick }) => {
+const AppliancesSettings = ({
+  appliances,
+  visible,
+  onSliderClick,
+  onButtonClick,
+}) => {
   return (
     <div hidden={visible} style={{ overflow: "auto" }}>
       <div
@@ -12,7 +17,13 @@ const AppliancesSettings = ({ appliances, visible, onButtonClick }) => {
         }}
       >
         {appliances?.map((a, i) => {
-          return <ApplianceBubble key={i} appliance={a} />;
+          return (
+            <ApplianceBubble
+              key={i}
+              onSliderClick={onSliderClick}
+              appliance={a}
+            />
+          );
         })}
       </div>
       <div

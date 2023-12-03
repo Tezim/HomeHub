@@ -134,7 +134,10 @@ const DevicesPage = () => {
                 margin: "30px 20px 20px 20px",
               }}
             >
-              <SpecificationText spec={"Room"} value={selectedDevice.name} />
+              <SpecificationText
+                spec={"Device Name"}
+                value={selectedDevice.name}
+              />
               <SpecificationText
                 spec={"IP Address"}
                 value={selectedDevice.IP_address}
