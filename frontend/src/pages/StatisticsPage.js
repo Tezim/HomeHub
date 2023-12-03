@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { hoursAsList, isAuthenticated } from "../components/helpers/Helpers";
+import { isAuthenticated } from "../components/helpers/Helpers";
 import { useNavigate } from "react-router-dom";
 import CustomLoading from "../components/custom/CustomLoading";
 import {

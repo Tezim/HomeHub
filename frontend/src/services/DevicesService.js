@@ -1,4 +1,4 @@
-import { getDataPromise, postDataPromise } from "./ApiService";
+import { getDataPromise, postDataPromise, putDataPromise } from "./ApiService";
 
 export const getDevicesFromDb = async () => {
   return getDataPromise(`devices/all`);
@@ -14,4 +14,8 @@ export const getDevicesForRoomId = async (id) => {
 
 export const addDeviceToDb = async (device) => {
   return postDataPromise(`devices/add`, device);
+};
+
+export const updateDeviceInDb = async (name, id, device) => {
+  return putDataPromise(`devices/room/${name}/${id}`, device);
 };
