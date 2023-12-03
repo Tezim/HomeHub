@@ -2,6 +2,16 @@ import { useState } from "react";
 import CustomSlider from "./custom/CustomSlider";
 
 const ApplianceBubble = ({ appliance }) => {
+  const adjustFontSize = (word) => {
+    let baseSize = 25;
+    let maxLength = 8;
+
+    if (word.length > maxLength) {
+      return `${baseSize - (word.length - maxLength)}px`;
+    } else {
+      return `${baseSize}px`;
+    }
+  };
   const [isOn, setIsOn] = useState(appliance.status);
   return (
     <div
@@ -27,7 +37,9 @@ const ApplianceBubble = ({ appliance }) => {
         }}
       >
         <div>
-          <div style={{ fontSize: "25px", color: "black" }}>
+          <div
+            style={{ fontSize: adjustFontSize(appliance.name), color: "black" }}
+          >
             {appliance.name}
           </div>
           <div style={{ fontSize: "15px", color: "#858483" }}>
