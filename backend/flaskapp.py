@@ -1,4 +1,6 @@
 import os
+import random
+
 from flask import redirect, url_for, request, session, jsonify, Response
 from flask_login import current_user, login_user, logout_user, login_required
 
@@ -336,10 +338,18 @@ def devices_add():
         new_dev.ip_address = request.form.get("ip_address")
         new_dev.mac_address = request.form.get("mac_address")
         new_dev.more_info = request.form.get("more_info")
-        new_dev.category_id = request.form.get("category")
+        category_id = request.form.get("category")
+        new_dev.category_id = category_id
         new_dev.usage = request.form.get("usage")
         new_dev.owner = current_user.user_id
         stats = Stats()
+        try:
+            cat = Category.query.filter_by(category_id = category_id).first()
+            if cat.name == "Weather_station":
+                stats.temperature = ",".join([str(random.randint(10, 25)) for _ in range(24)])
+        except Exception:
+            pass
+        stats.usage = ",".join([str(random.randint(0, 150)) for _ in range(24)])
         try :
             db.session.add(stats)
             db.session.commit()
@@ -631,9 +641,10 @@ def get_available_devices(table_name):
 # ___________________stats__________________________________________________
 
 # ! stats endpointy
-@login_required
+
 @app.route("/stats", methods=['GET'], defaults={'id': None})
 @app.route("/stats/<id>")
+@login_required
 def stats(id):
     if id is None:
         return {}
