@@ -1480,6 +1480,56 @@
           }
         }
       }
+    },
+    "/stats": {
+      "get": {
+        "tags": ["Stats"],
+        "description": "empty base endpoint",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/stats/<id>": {
+      "get": {
+        "tags": ["Stats"],
+        "description": "returns available statistics for devices",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "in": "path",
+            "required": true}
+        ],
+        "responses": {
+          "200": {
+            "description": "returns stats in list format or empty string if statistics are not available",
+            "schema": {
+                "example": {
+                    "temperature": [
+                        "1",
+                        "8",
+                        "10"
+                    ],
+                    "usage": ""
+                }
+            }
+          },
+          "404": {
+            "description": " If db error occurs meaning device does not have stats assigned and foreign key is null",
+            "schema": {
+              "example": {"db_error": "no_stats_available"}
+            }
+          },
+          "500": {
+            "description": "Reports db error",
+            "schema": {
+              "example": {"db_error": "stats_getDev"}
+            }
+          }
+        }
+      }
+
     }
   }
 }

@@ -1,6 +1,7 @@
 import datetime
 
 from backend.DTO.category_model import Category
+from backend.DTO.stats_model import Stats
 from backend.app_config import db
 from backend.DTO.room_model import Room
 
@@ -19,6 +20,7 @@ class Device(db.Model):
     date_created = db.Column(db.DateTime(timezone=True),default=datetime.datetime.now())
     date_modified = db.Column(db.DateTime(timezone=True),default=datetime.datetime.now(), onupdate=datetime.datetime.now())
     owner = db.Column(db.Integer)
+    statistics = db.Column(db.Integer, db.ForeignKey(Stats.stats_id))
 
 
 
