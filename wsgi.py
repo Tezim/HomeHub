@@ -1,11 +1,10 @@
-import subprocess
+from backend.flaskapp import app as application
 
-from backend.flaskapp import app, db
-import os
+with application.app_context():
+    from backend.flaskapp import db
+    db.create_all()
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run()
+    application.run()
 
 
